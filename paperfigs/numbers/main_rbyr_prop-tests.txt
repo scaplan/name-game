@@ -1,0 +1,86 @@
+TP.hits :
+[1] 7211
+
+TP.total :
+[1] 8155
+
+BR.hits :
+[1] 9643
+
+BR.total :
+[1] 12036
+
+TP.BR.prop :
+
+	2-sample test for equality of proportions with continuity correction
+
+data:  c(TP.hits, BR.hits) out of c(TP.total, BR.total)
+X-squared = 242.52, df = 1, p-value < 2.2e-16
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.07300746 0.09311854
+sample estimates:
+   prop 1    prop 2 
+0.8842428 0.8011798 
+
+
+TP.hits :
+[1] 7211
+
+TP.total :
+[1] 8155
+
+CB.hits :
+[1] 7975
+
+CB.total :
+[1] 9689
+
+TP.CB.prop :
+
+	2-sample test for equality of proportions with continuity correction
+
+data:  c(TP.hits, CB.hits) out of c(TP.total, CB.total)
+X-squared = 130.11, df = 1, p-value < 2.2e-16
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.05073851 0.07155036
+sample estimates:
+   prop 1    prop 2 
+0.8842428 0.8230984 
+
+
+BRnonprod.hits :
+[1] 2446
+
+BRnonprod.total :
+[1] 3898
+
+TP.BRnonprod.prop :
+
+	2-sample test for equality of proportions with continuity correction
+
+data:  c(TP.hits, BRnonprod.hits) out of c(TP.total, BRnonprod.total)
+X-squared = 1089.9, df = 1, p-value < 2.2e-16
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.2398615 0.2736215
+sample estimates:
+   prop 1    prop 2 
+0.8842428 0.6275013 
+
+
+CB.BRnonprod.prop :
+
+	2-sample test for equality of proportions with continuity correction
+
+data:  c(CB.hits, BRnonprod.hits) out of c(CB.total, BRnonprod.total)
+X-squared = 593.95, df = 1, p-value < 2.2e-16
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.1784442 0.2127500
+sample estimates:
+   prop 1    prop 2 
+0.8230984 0.6275013 
+
+

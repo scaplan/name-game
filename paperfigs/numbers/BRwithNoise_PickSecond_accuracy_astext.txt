@@ -1,0 +1,9 @@
+# A tibble: 6 × 2
+  Noise                Accuracy
+  <chr>                   <dbl>
+1 OP + 10% Pick Second    0.610
+2 OP + 20% Pick Second    0.560
+3 OP + 30% Pick Second    0.514
+4 OP + 40% Pick Second    0.456
+5 Pure Optimize           0.657
+6 Threshold (TP)          0.878

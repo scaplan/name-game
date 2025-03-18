@@ -1,0 +1,8 @@
+Total outputs    Total Switches    Said before    Heard before    De Novo names after Round 1
+#############    ##############    ###########    ############    ###########################
+        24464              5029           2586            3826                            937
+
+
+P(switch)    P(Said before|switch)    P(Heard before|switch)    P(de novo name|switch)    P(de novo name)
+#########    #####################    ######################    ######################    ###############
+     0.21                     0.51                      0.76                      0.19              0.038

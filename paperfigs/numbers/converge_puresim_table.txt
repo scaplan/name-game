@@ -1,0 +1,40 @@
+% latex table generated in R 4.3.2 by xtable 1.8-4 package
+% Sat Mar 15 21:47:42 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|ccc}
+  \hline
+ABM & Network Size & Word Distribution & Converged Round (Std Dev) \\ 
+  \hline
+Threshold (TP) &  24 &  10 & 22.14 (10.60) \\ 
+  Threshold (TP) &  48 &  10 & 24.22 (8.49) \\ 
+  Threshold (TP) &  96 &  10 & 24.45 (5.66) \\ 
+  Imitate &  24 &  10 & 15.19 (6.77) \\ 
+  Imitate &  48 &  10 & 16.60 (6.32) \\ 
+  Imitate &  96 &  10 & 17.04 (4.93) \\ 
+  Optimize &  24 &  10 & 14.64 (5.35) \\ 
+  Optimize &  48 &  10 & 15.10 (4.44) \\ 
+  Optimize &  96 &  10 & 14.90 (2.92) \\ 
+   \hline
+\end{tabular}
+\end{table}
+% latex table generated in R 4.3.2 by xtable 1.8-4 package
+% Sat Mar 15 21:47:42 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|ccc}
+  \hline
+ABM & Network Size & Word Distribution & Converged Round (Std Dev) \\ 
+  \hline
+Threshold (TP) &  24 & 100 & 27.23 (10.64) \\ 
+  Threshold (TP) &  48 & 100 & 30.95 (10.30) \\ 
+  Threshold (TP) &  96 & 100 & 31.00 (7.60) \\ 
+  Imitate &  24 & 100 & 19.28 (7.68) \\ 
+  Imitate &  48 & 100 & 20.24 (7.11) \\ 
+  Imitate &  96 & 100 & 20.04 (5.58) \\ 
+  Optimize &  24 & 100 & 25.89 (11.95) \\ 
+  Optimize &  48 & 100 & 25.95 (9.44) \\ 
+  Optimize &  96 & 100 & 24.75 (6.51) \\ 
+   \hline
+\end{tabular}
+\end{table}
