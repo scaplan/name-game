@@ -91,6 +91,9 @@ extract_paper_numbers() {
 	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/BRwithNoise_accuracy_astext.txt" "${PAPER_DIR}/numbers/BRwithNoise_accuracy_astext.txt"
 	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/BRwithNoise_PickSecond_accuracy_astext.txt" "${PAPER_DIR}/numbers/BRwithNoise_PickSecond_accuracy_astext.txt"
 
+	# SI TP with Gaussian noise
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/TP_GAUSS_RESULT.tsv" "${PAPER_DIR}/numbers/TP_GAUSS_RESULT.tsv"
+
 	# SI Bayes tipping rate
 	cp "${STAT_PLOT_DIR}/bayestippingpoint/tippinglikelihoodbynetworksize.tsv" "${PAPER_DIR}/numbers/Bayes_tipping_likelihood_by_networksize.tsv"
 

@@ -170,7 +170,16 @@ run_round_by_round_single_setting_pick_second () {
 }
 
 
+run_round_by_round_single_setting_tp_gauss () {
+	var_dir_prep_round_by_round $1 $2 $3 $4 "-TPgauss-${5}"
+	echo "ROUND-BY-ROUND EMPIRICAL -- MemSize: ${MEMSIZE},  BRnoise: ${NOISELEVEL},  PopType: ${POP_RULE} TPgauss-${5}..."
 
+	python3 ./roundbyround/unifiedempiricalnamegame.py --datasourcefile "${COMBINED_FILE}" --outputfile "${ANALYSIS_DATA_FILE}" --simplenumberfile "${ROUND_BY_ROUND_ABM_COMPARE_SIMPLE}" --memsize "${MEMSIZE}" --brnoise "${NOISELEVEL}" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}" --tpnoise "${5}" # --verboseprint
+
+	# clear_big_file_round_by_round $1 $2 $3 $4
+	clearline
+
+}
 
 
 

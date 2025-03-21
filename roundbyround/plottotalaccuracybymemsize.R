@@ -2,7 +2,7 @@
 ###########################################################
 ###########################################################
 ##  Author: Spencer Caplan
-##  Last Modified: 02/12/24
+##  CUNY Graduate Center
 ##
 ##  Overall analysis of empirical name game data
 ##  with respect to each model

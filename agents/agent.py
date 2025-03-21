@@ -7,6 +7,9 @@ Abstract-ish superclass extended by different agent types (CB, BR, TP, etc.)
 Setting FIFO_REMOVAL to True implements the queue-based memory model
 While setting FIFO_REMOVAL to False implement the "bag" set-based memory model
 
+Author: Spencer Caplan
+CUNY Graduate Center
+
 """
 class Agent():
 	def __init__(self, num, memlimit, initnamesdist, poprule, updaterule):

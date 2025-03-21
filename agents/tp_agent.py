@@ -4,14 +4,17 @@ import random
 from collections import Counter
 from agents.agent import Agent
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
 class TP_Agent(Agent):
-	def __init__(self, num, memlimit, initnamesdist, poprule, updaterule):
+	def __init__(self, num, memlimit, initnamesdist, poprule, updaterule, offset=0):
 		super().__init__(num, memlimit, initnamesdist, poprule, updaterule)
 		self.hasprodname = False
 		self.prodname = ""
 		# calculate productivity threshold
 		EXCEPTION_THRESHOLD = (self.MEM_SIZE/np.log(self.MEM_SIZE))
-		self.PRODUCTIVITY_THRESHOLD = self.MEM_SIZE - EXCEPTION_THRESHOLD
+		self.PRODUCTIVITY_THRESHOLD = (self.MEM_SIZE - EXCEPTION_THRESHOLD) + offset
 
 
 

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Spencer Caplan
-# CUNY Graduate Center
-
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
 
 
 ############
@@ -22,6 +21,7 @@ RUN_NAME_SWITCHBACK_CALC=true
 RUN_COORD_PREPOST_TP=true
 RUN_M_RANGE_EVAL=true
 RUN_KEEPLAST_ROUND_BY_ROUND=true
+RUN_TP_GAUSSNOISE=true
 RUN_BRNOISE_ROUND_BY_ROUND=true
 RUN_PURESIM_CONVERGENCE=true
 RUN_CRITICAL_MASS_SIMULATION=true
@@ -176,6 +176,49 @@ if [ "$RUN_KEEPLAST_ROUND_BY_ROUND" = true ] ; then
 fi
 ############
 ############
+
+
+
+############
+## Vary TP according to some normal distribution (centered at true TP)
+if [ "$RUN_TP_GAUSSNOISE" = true ] ; then 
+	TP_GAUSSNOISE_STRING="Running TP normal distribution analysis..."
+	top_message "${TP_GAUSSNOISE_STRING}"
+
+	if [ "$RUN_MAIN_ROUND_BY_ROUND" = false ] ; then
+		echo "ERROR: Can't run TP normal distribution analysis base true TP condition"
+		exit
+	else 
+
+		TP_GAUSS_RESULT_FILE="${MODEL_EMPIRICAL_DIR}/TP_GAUSS_RESULT.tsv"
+		
+		MEMSIZE="12" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
+		ACC_F="model_emp_results_total_accuracy.tsv"
+		ACC_BASE="${MODEL_EMPIRICAL_DIR}M-${MEMSIZE}_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}"
+		echo -e "STD_DEV\tACCURACY" > "${TP_GAUSS_RESULT_FILE}"
+
+		run_round_by_round_single_setting_tp_gauss "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}" "0.1"
+		run_round_by_round_single_setting_tp_gauss "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}" "0.5"
+		run_round_by_round_single_setting_tp_gauss "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}" "1"
+		run_round_by_round_single_setting_tp_gauss "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}" "2"
+		run_round_by_round_single_setting_tp_gauss "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}" "3"
+
+		# awk/cat all the accuracy results into a single file
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}/${ACC_F}" | awk '{print $0 "\t0"}' >> "${TP_GAUSS_RESULT_FILE}"
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}-TPgauss-0.1/${ACC_F}" | awk '{print $0 "\t0.1"}' >> "${TP_GAUSS_RESULT_FILE}"
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}-TPgauss-0.5/${ACC_F}" | awk '{print $0 "\t0.5"}' >> "${TP_GAUSS_RESULT_FILE}"
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}-TPgauss-1/${ACC_F}" | awk '{print $0 "\t1"}' >> "${TP_GAUSS_RESULT_FILE}"
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}-TPgauss-2/${ACC_F}" | awk '{print $0 "\t2"}' >> "${TP_GAUSS_RESULT_FILE}"
+		awk -F'\t' 'NR==4 {print $10}' "${ACC_BASE}-TPgauss-3/${ACC_F}" | awk '{print $0 "\t3"}' >> "${TP_GAUSS_RESULT_FILE}"
+	fi
+
+	bottom_message "${TP_GAUSSNOISE_STRING}"
+fi
+############
+############
+
+
+
 
 
 ############

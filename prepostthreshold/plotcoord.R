@@ -2,7 +2,7 @@
 ###########################################################
 ###########################################################
 ##  Author: Spencer Caplan
-##  Last Modified: 02/20/25
+##  CUNY Graduate Center
 ##
 ##  Plot probability of coordination success
 ##  before and after reaching TP threshold

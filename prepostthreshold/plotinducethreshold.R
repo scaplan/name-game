@@ -2,7 +2,7 @@
 ###########################################################
 ###########################################################
 ##  Author: Spencer Caplan
-##  Last Modified: 02/21/25
+##  CUNY Graduate Center
 ##
 ##  Plot threshold discontinuity effect at 
 ##  different cutoffs (induce TP)

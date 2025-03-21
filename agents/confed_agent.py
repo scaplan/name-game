@@ -1,6 +1,8 @@
 import random
 from agents.agent import Agent
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
 
 class Confed_Agent(Agent):
 	def __init__(self, num, memlimit, initnamesdist, poprule, nametoseed):

@@ -1,9 +1,8 @@
 import random
 from agents.agent import Agent
-# from agent import Agent
 
-
-
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
 
 class Luce_Agent(Agent):
 	def __init__(self, num, memlimit, initnamesdist, poprule, updaterule):

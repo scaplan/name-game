@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
 import sys, os, os.path
 import numpy as np
 import argparse
@@ -20,6 +23,7 @@ from agents.cb_agent import CB_Agent
 
 buffer = 4*" "
 VERBOSE_MODE = True
+TP_GAUSSIAN_NOISE = 0
 
 MEM_SIZE = 0
 BR_NOISE_PARAM = 0.0
@@ -47,7 +51,7 @@ def play_game(curr_data, output_file):
 		- TP predictions
 		- total trials
 	"""
-	global MEM_SIZE, BR_NOISE_PARAM, FIFO_REMOVAL, UPDATE_RULE
+	global MEM_SIZE, BR_NOISE_PARAM, FIFO_REMOVAL, UPDATE_RULE, TP_GAUSSIAN_NOISE
 	
 	results_dict = {
 					"CB":[0,0],
@@ -101,7 +105,11 @@ def play_game(curr_data, output_file):
 					agent_dict_BR[curr_ID] = BR_Agent_PickSecond(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, BR_NOISE_PARAM)
 				else:
 					agent_dict_BR[curr_ID] = BR_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, BR_NOISE_PARAM)
-				agent_dict_TP[curr_ID] = TP_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
+				if not TP_GAUSSIAN_NOISE:
+					agent_dict_TP[curr_ID] = TP_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
+				else:
+					TP_SHIFTED = round(np.random.normal(0.0, TP_GAUSSIAN_NOISE))
+					agent_dict_TP[curr_ID] = TP_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, TP_SHIFTED)
 
 			assert curr_ID in agent_dict_CB and curr_ID in agent_dict_BR and curr_ID in agent_dict_TP
 			curr_CB_agent = agent_dict_CB.get(curr_ID)
@@ -155,7 +163,7 @@ def play_game(curr_data, output_file):
 def parse_args_and_defaults(args: argparse.Namespace) -> None:
 	global NG_SOURCE_FILENAME, OUTPUT_FILENAME_MAIN, OUTPUT_FILENAME_SIMPLE_NUMBERS, MEM_SIZE
 	global BR_NOISE_AS_STR, BR_NOISE_PARAM, FIFO_REMOVAL, UPDATE_RULE
-	global VERBOSE_MODE, BR_PICK_SECOND
+	global VERBOSE_MODE, BR_PICK_SECOND, TP_GAUSSIAN_NOISE
 
 	if args.datasourcefile is None:
 		raise Exception("Need to specify path to empirical data")
@@ -209,6 +217,16 @@ def parse_args_and_defaults(args: argparse.Namespace) -> None:
 	else:
 		UPDATE_RULE = args.updaterule
 
+	if args.tpnoise is None:
+		TP_GAUSSIAN_NOISE = 0
+	elif args.tpnoise > 3:
+		raise Exception("TP noise std dev cannot exceed 3.0")
+	elif args.tpnoise <= 0:
+		raise Exception("TP noise std dev cannot be negative")
+	else:
+		TP_GAUSSIAN_NOISE = args.tpnoise
+
+
 	if args.verboseprint:
 		VERBOSE_MODE = True
 	else:
@@ -226,9 +244,11 @@ if __name__ == "__main__":
 	parser.add_argument("--simplenumberfile", help="output file for simple, global round-by-round comparison of ABMs", type=str)
 	parser.add_argument("--memsize", help="size limit for agent memory buffer", type=int)
 	parser.add_argument("--brnoise", help="parameter controlling noisy sampling rate for BR agents", type=int)
-	parser.add_argument("--brpicksecond", help="parameter controlling whether the BR+Noise agents should choose randomly or pick the second frequent item in memory", action=argparse.BooleanOptionalAction, default=False,)
+	parser.add_argument("--brpicksecond", help="parameter controlling whether the BR+Noise agents should choose randomly or pick the second frequent item in memory", action=argparse.BooleanOptionalAction, default=False)
 	parser.add_argument("--poprule", help="Memory pop procedure: FIFO or random sampling", type=str)
 	parser.add_argument("--updaterule", help="Memory addition procedure: penalized or buffer", type=str)
+	parser.add_argument("--tpnoise", type=float,
+                        help="If set then have individual TP agents sample threshold according to normal distribution (mean at TP, std dev. as provided)")
 	parser.add_argument("--verboseprint", action=argparse.BooleanOptionalAction,
                         help="Print initial results to terminal (useful for debugging)")
 	parse_args_and_defaults(args = parser.parse_args())

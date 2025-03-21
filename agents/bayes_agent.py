@@ -4,6 +4,10 @@ import numpy as np
 from agents.agent import Agent
 
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
+
 # Bayesian Tipping Point simulation
 
 

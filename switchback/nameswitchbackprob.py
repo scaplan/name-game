@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
 import sys, os, os.path
 import argparse
 import csv

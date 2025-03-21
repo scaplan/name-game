@@ -1,7 +1,8 @@
 import random
 from agents.agent import Agent
 
-
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
 
 
 class BR_Agent(Agent):

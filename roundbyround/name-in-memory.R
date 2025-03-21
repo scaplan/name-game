@@ -2,7 +2,7 @@
 ###########################################################
 ###########################################################
 ##  Author: Spencer Caplan
-##  Last Modified: 02/19/25
+##  CUNY Graduate Center
 ##
 ##  Check the proportion of empirical output names
 ##  present in memory with respect to each model

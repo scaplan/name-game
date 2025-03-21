@@ -2,7 +2,8 @@ import random
 from collections import Counter
 from agents.agent import Agent
 
-
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
 
 
 class BR_Agent_PickSecond(Agent):

@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
 import random
 from collections import Counter as counter
 

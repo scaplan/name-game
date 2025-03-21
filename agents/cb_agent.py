@@ -1,5 +1,8 @@
 from agents.agent import Agent
 
+##  Author: Spencer Caplan
+##  CUNY Graduate Center
+
 class CB_Agent(Agent):
 	def __init__(self, num, memlimit, initnamesdist, poprule, updaterule):
 		super().__init__(num, memlimit, initnamesdist, poprule, updaterule)
