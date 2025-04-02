@@ -100,14 +100,15 @@ if [ "$RUN_COORD_PREPOST_TP" = true ] ; then
 	top_message "${COORD_STRING}"
 	MEMSIZE="12" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
 	COORDPROB_OUT="${PREPOST_DIR}/coordprob_output_${MEMSIZE}.tsv"
+	COORDPROB_FIRST_HIT_TP="${PREPOST_DIR}/first_hit_threshold_${MEMSIZE}.tsv"
 
-	python3 ./prepostthreshold/coordprob.py --datasourcefile "${COMBINED_FILE}" --outputfile "${COORDPROB_OUT}" --memsize "${MEMSIZE}" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}"
-	Rscript ./prepostthreshold/plotcoord.R "${PREPOST_DIR}" "${COORDPROB_OUT}" && clearline
-
+	python3 ./prepostthreshold/coordprob.py --datasourcefile "${COMBINED_FILE}" --outputfile "${COORDPROB_OUT}" --outputfirsthitTP "${COORDPROB_FIRST_HIT_TP}" --memsize "${MEMSIZE}" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}"
+	Rscript ./prepostthreshold/plotcoord.R "${PREPOST_DIR}" "${COORDPROB_OUT}" "${COORDPROB_FIRST_HIT_TP}" && clearline
 
 	COORDPROB_OUT="${PREPOST_DIR}/coordprob_output_RANDO.tsv"
-	python3 ./prepostthreshold/coordprob.py --datasourcefile "${COMBINED_FILE}" --outputfile "${COORDPROB_OUT}" --memsize "RANDOM" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}"
-	Rscript ./prepostthreshold/plotcoord.R "${PREPOST_DIR}" "${COORDPROB_OUT}" && clearline
+	COORDPROB_FIRST_HIT_TP="${PREPOST_DIR}/first_hit_threshold_RANDO.tsv"
+	python3 ./prepostthreshold/coordprob.py --datasourcefile "${COMBINED_FILE}" --outputfile "${COORDPROB_OUT}" --outputfirsthitTP "${COORDPROB_FIRST_HIT_TP}" --memsize "RANDOM" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}"
+	Rscript ./prepostthreshold/plotcoord.R "${PREPOST_DIR}" "${COORDPROB_OUT}" "${COORDPROB_FIRST_HIT_TP}" && clearline
 
 	declare -a MEMSIZE_ARRAY=("10" "12" "14")
 	for MEMSIZE in "${MEMSIZE_ARRAY[@]}" ; do
@@ -284,7 +285,7 @@ if [ "$RUN_PURESIM_CONVERGENCE" = true ] ; then
 	
 	declare -a WORD_SET=("10" "100")
 	declare -a NETWORK_SIZES=("24" "48" "96")
-	declare -a AGENTS=("TP" "BR" "CB")
+	declare -a AGENTS=("TP" "BR" "CB" "Luce")
 	for NUM_WORDS in "${WORD_SET[@]}" ; do
 		for N in "${NETWORK_SIZES[@]}" ; do
 			for ABM in "${AGENTS[@]}" ; do

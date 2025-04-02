@@ -7,6 +7,7 @@ import sys, os, os.path
 import numpy as np
 import argparse
 import random
+from collections import Counter
 
 # Add parent directory to sys.path
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -29,6 +30,7 @@ UPDATE_RULE = "BUFFER"
 COL_SEP = "\t"
 NG_SOURCE_FILENAME = ""
 OUTPUT_FILENAME_MAIN = ""
+OUTPUT_FILENAME_THRESHOLDHIT = ""
 
 agent_network_firsthit_dict = {}
 
@@ -77,7 +79,7 @@ def find_first_TP_hits(curr_data):
 			reached_TP = curr_TP_agent.in_deterministic_state()
 			if reached_TP:
 				if agent_network_ID not in agent_network_firsthit_dict:
-					agent_network_firsthit_dict[agent_network_ID] = round_num
+					agent_network_firsthit_dict[agent_network_ID] = (round_num, ExpID)
 
 			######################
 			## update agent memory
@@ -126,7 +128,7 @@ def play_game(curr_data, output_file):
 			agent_network_ID = SourcePaper + "_" + curr_ID
 			agent_first_hit_TP = agent_network_firsthit_dict.get(agent_network_ID)
 			if agent_first_hit_TP:
-				curr_TP_round = round_num - agent_first_hit_TP
+				curr_TP_round = round_num - agent_first_hit_TP[0]
 			else:
 				curr_TP_round = None
 
@@ -167,7 +169,7 @@ def play_game(curr_data, output_file):
 
 def parse_args_and_defaults(args: argparse.Namespace) -> None:
 	global NG_SOURCE_FILENAME, OUTPUT_FILENAME_MAIN, MEM_SIZE
-	global FIFO_REMOVAL, UPDATE_RULE, STRING_MEM
+	global FIFO_REMOVAL, UPDATE_RULE, STRING_MEM, OUTPUT_FILENAME_THRESHOLDHIT
 
 	if args.datasourcefile is None:
 		raise Exception("Need to specify path to empirical data")
@@ -178,6 +180,11 @@ def parse_args_and_defaults(args: argparse.Namespace) -> None:
 		raise Exception("Need to specify output path for main analysis file")
 	else:
 		OUTPUT_FILENAME_MAIN = args.outputfile
+
+	if args.outputfirsthitTP is None:
+		raise Exception("Need to specify output path for main analysis file")
+	else:
+		OUTPUT_FILENAME_THRESHOLDHIT = args.outputfirsthitTP
 
 	if args.memsize is None:
 		raise Exception("Need to specify memory size")
@@ -211,6 +218,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description = "Name Game Modeling")
 	parser.add_argument("--datasourcefile", help="filename for source data", type=str)
 	parser.add_argument("--outputfile", help="output filename for resulting analysis", type=str)
+	parser.add_argument("--outputfirsthitTP", help="output filename for when participants first reached threshold", type=str)
 	parser.add_argument("--memsize", help="size limit for agent memory buffer", type=str)
 	parser.add_argument("--poprule", help="Memory pop procedure: FIFO or random sampling", type=str)
 	parser.add_argument("--updaterule", help="Memory addition procedure: penalized or buffer", type=str)
@@ -233,6 +241,12 @@ if __name__ == "__main__":
 			success = play_game(curr_data, output_file_main)
 
 
-		
+	with open(OUTPUT_FILENAME_THRESHOLDHIT, 'w') as output_first_hit:
+		output_first_hit.write("round\tnetwork\n")
+		for pair in agent_network_firsthit_dict.values():
+			output_string = str(pair[0]) + "\t" + str(pair[1])
+			output_first_hit.write(output_string + "\n")
+
+
 	print("Done :)", end="")
 

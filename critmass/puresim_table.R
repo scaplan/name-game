@@ -44,7 +44,8 @@ if (length(args) == 3) {
 setwd(dataDir)
 df <- read.csv(targetInputFile, sep = "\t")
 df$AGENT_TYPE <- as.factor(df$AGENT_TYPE)
-levels(df$AGENT_TYPE)<-c("Optimize", "Imitate", "Threshold (TP)")
+# levels(df$AGENT_TYPE)<-c("Optimize", "Imitate", "Threshold (TP)")
+levels(df$AGENT_TYPE)<-c("Optimize", "Imitate", "Luce", "Threshold (TP)")
 
 df.print <- subset(df, select = -c(CONVERGED_SIMS, TOTAL_SIMS, M)) 
 df.print <- df.print %>% rename(ABM = AGENT_TYPE)

@@ -23,20 +23,21 @@ sourceDir <- find_root(is_git_root)
 source(file.path(sourceDir, "aux", "aux-functions.R"))
 
 
-
 if (RUN_LIVE) {
   currMachine <- Sys.info()[['nodename']]
   dataDir = paste(sourceDir, '/output/prepostthreshold/', sep = "")
   targetInputFile <- "coordprob_output_12.tsv"
+  hit_dist <- "first_hit_threshold_12.tsv"
 }
 
 output_message <- load_in_libraries()
 load_in_plot_aesthetics()
 
 
-if (length(args) == 2) {
+if (length(args) == 3) {
   dataDir = args[1]
   targetInputFile = args[2]
+  hit_dist <- args[3]
 }
 
 
@@ -45,6 +46,7 @@ if (length(args) == 2) {
 ## 0. Reading in data and filter confeds / non-response
 setwd(dataDir)
 coord.df <- read.csv(targetInputFile, sep = "\t")
+firsthit.df <- read.csv(hit_dist, sep = "\t")
 
 if (RUN_LIVE) { nrow(coord.df) }
 coord.df <- subset(coord.df, TP.Round != "None") # drop participants who never reached TP
@@ -161,5 +163,44 @@ if (RUN_LIVE) { p }
 ggsave(plot = p,
        filename=paste("TP-Accuracy-Pre-Post-TP-", M, ".png", sep=""),
        width = 11, height = 11, units = "in") 
+
+
+
+
+
+
+### Plotting out SI variation over when participants first reach TP (even for a single network)
+p <- ggplot(firsthit.df, aes(x = round)) +
+  geom_histogram(bins = 20, 
+                 fill = "lightblue", 
+                 color = "black") + single_pane_theme()
+if (RUN_LIVE) { p }
+
+
+firsthit.df.samples <- firsthit.df %>% filter(network %in% c("CBBB2018-181", "CB2015-56", "CB2015-73", "CB2015-86", "CBBB2018-1191"))
+
+firsthit.df.samples <- firsthit.df.samples %>%
+  mutate(network = case_when(
+    network == "CBBB2018-181" ~ "CBBB (2018)\nNetwork 2",
+    network == "CBBB2018-1191" ~ "CBBB (2018)\n Network 1",
+    network == "CB2015-56" ~ "C&B (2015)\nNetwork 1",
+    network == "CB2015-73" ~ "C&B (2015)\nNetwork 2",
+    network == "CB2015-86" ~ "C&B (2015)\nNetwork 3",
+    TRUE ~ network  # maintain anything else not covered above
+  ))
+
+
+
+p <- ggplot(firsthit.df.samples, aes(x = round)) +
+  geom_histogram(bins = 30, fill = "lightblue", 
+                 color='black', alpha=0.4, position='identity') + single_pane_theme() + 
+  facet_wrap(~ network, ncol = 5) + 
+  xlab("Round") + ylab("Number of Participants") + ggtitle("Distribution of round at which participants first reached TP threshold\n")
+if (RUN_LIVE) { p }
+
+ggsave(plot = p,
+       filename=paste("Participant-Variation-Threshold-Speed-", M, ".png", sep=""),
+       width = 20, height = 6, units = "in") 
+
 
 

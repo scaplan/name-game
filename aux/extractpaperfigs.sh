@@ -43,6 +43,10 @@ extract_paper_figs() {
 	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/figS1_total_accuracy_by_M.png" "${PAPER_DIR}/SC_SI_fig1_M_robust.png"
 
 
+	# SI threshold speed variation
+	cp "${STAT_PLOT_DIR}/prepostthreshold/Participant-Variation-Threshold-Speed-12.png" "${PAPER_DIR}/SC_SI_threshold_speed.png"
+
+
 	# SI Buffer
 	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-BUFFER/fig1_rbyr_accuracy_combined_new_earlyrounds.png" "${PAPER_DIR}/SC_SI_keeplast_rbyr.png"
 
