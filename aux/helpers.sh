@@ -176,6 +176,11 @@ run_round_by_round_single_setting_tp_gauss () {
 
 	python3 ./roundbyround/unifiedempiricalnamegame.py --datasourcefile "${COMBINED_FILE}" --outputfile "${ANALYSIS_DATA_FILE}" --simplenumberfile "${ROUND_BY_ROUND_ABM_COMPARE_SIMPLE}" --memsize "${MEMSIZE}" --brnoise "${NOISELEVEL}" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}" --tpnoise "${5}" # --verboseprint
 
+	# Round by round analysis
+	MODEL_ACCURACY_GLOBAL="${CURR_OUTPUT_DIR}/model_emp_results_total_accuracy.tsv"
+	MODEL_ACCURACY_ROUND_BY_ROUND="${CURR_OUTPUT_DIR}/model_emp_results_roundbyround_accuracy.tsv"
+	Rscript ./roundbyround/analyze-empirical-models.R "${CURR_OUTPUT_DIR}" "${ANALYSIS_DATA_FILE}" "${MODEL_ACCURACY_GLOBAL}" "${MODEL_ACCURACY_ROUND_BY_ROUND}"
+
 	# clear_big_file_round_by_round $1 $2 $3 $4
 	clearline
 

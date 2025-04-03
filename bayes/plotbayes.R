@@ -131,7 +131,7 @@ ggsave(plot = triple.pl,
 ######################################
 ### For plotting averages
 
-avg.df <- bayes_data %>% group_by(NETWORK_SIZE, CONFED_PROP, ROUNDNUM) %>% summarise(NEW_PROP = mean(NEW_PROP))
+avg.df <- bayes_data %>% group_by(NETWORK_SIZE, CONFED_PROP, ROUNDNUM) %>% summarise(NEW_PROP = mean(NEW_PROP), .groups = "drop_last")
 
 p24<-ggplot(subset(avg.df, NETWORK_SIZE == 24), aes(x=ROUNDNUM, y=NEW_PROP, group=CONFED_PROP)) + annotate(geom = "rect", xmin=10, xmax=40, ymin=0, ymax=1.0, fill="#7CCD7C", alpha = 0.4) +
   geom_line(aes(color=CONFED_PROP)) + geom_point(aes(color=CONFED_PROP))+
