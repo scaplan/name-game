@@ -7,7 +7,7 @@ Please email any / all of the (co-first) authors if you have questions.
 
 ### Preprint available below:
 - [PsyArXiv](https://osf.io/preprints/psyarxiv/xucka_v1)
-- [SocArXiv (pending)](https://osf.io/preprints/socarxiv/evnq7_v1?view_only=)
+- [SocArXiv](https://osf.io/preprints/socarxiv/evnq7_v1?view_only=)
 
 ---
 
