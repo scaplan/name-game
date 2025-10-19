@@ -17,18 +17,18 @@
 ############
 ## Flags
 RUN_MAIN_ROUND_BY_ROUND=true
-RUN_NAME_SWITCHBACK_CALC=true
-RUN_COORD_PREPOST_TP=true
-RUN_M_RANGE_EVAL=true
-RUN_KEEPLAST_ROUND_BY_ROUND=true
-RUN_TP_GAUSSNOISE=true
-RUN_BRNOISE_ROUND_BY_ROUND=true
-RUN_PURESIM_CONVERGENCE=true
-RUN_CRITICAL_MASS_SIMULATION=true
-RUN_TIPPING_POINT_BAYES_SIMULATION=true
-RUN_PERCENT_BR_MIX=true
+RUN_NAME_SWITCHBACK_CALC=false
+RUN_COORD_PREPOST_TP=false
+RUN_M_RANGE_EVAL=false
+RUN_KEEPLAST_ROUND_BY_ROUND=false
+RUN_TP_GAUSSNOISE=false
+RUN_BRNOISE_ROUND_BY_ROUND=false
+RUN_PURESIM_CONVERGENCE=false
+RUN_CRITICAL_MASS_SIMULATION=false
+RUN_TIPPING_POINT_BAYES_SIMULATION=false
+RUN_PERCENT_BR_MIX=false
 
-EXTRACT_PAPER_FIGS=true
+EXTRACT_PAPER_FIGS=false
 ############
 ############
 
@@ -70,9 +70,40 @@ if [ "$RUN_MAIN_ROUND_BY_ROUND" = true ] ; then
 	MAIN_FIG1_STRING="Running main Figure 1 analysis (round-by-round, primary configuration)..."
 	top_message "${MAIN_FIG1_STRING}"
 
+	# MEMSIZE="10" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
+	# run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+
+	# MEMSIZE="11" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
+	# run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+
 	MEMSIZE="12" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
-	run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
-	run_round_by_round_name_in_mem "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+	# run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+	# run_round_by_round_name_in_mem "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+
+	# MEMSIZE="13" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
+	# run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+
+	# MEMSIZE="14" NOISELEVEL="0" POP_RULE="FIFO" UPDATE_RULE="PENALIZE"
+	# run_round_by_round_single_setting "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+
+	# Extract and plot 10, 11, 13, 14
+	TWO_THIRDS_COMPARE="${MODEL_EMPIRICAL_DIR}TWO_THIRDS_COMPARE.tsv"
+	echo -e "MEMSIZE\tTP-CORRECT\tTWOTHIRDS-CORRECT\tTOTAL-ROUNDS" > "$TWO_THIRDS_COMPARE"
+	for MEMSIZE in "10" "11" "13" "14"; do
+		var_dir_prep_round_by_round "${MEMSIZE}" "${NOISELEVEL}" "${POP_RULE}" "${UPDATE_RULE}"
+		grep "^Head-to-head (TP, 2/3rds)" "$ROUND_BY_ROUND_ABM_COMPARE_SIMPLE" | \
+	    awk -v mem="$MEMSIZE" '{
+	        printf "%s", mem        # Print MEMSIZE first
+	        first_num = 1
+	        for(i=2;i<=NF;i++) {
+	            if($i ~ /^[0-9]+$/) {
+	                printf "\t%s", $i
+	            }
+	        }
+	        print ""                # newline
+	    }' >> "$TWO_THIRDS_COMPARE"
+	done
+	
 
 	bottom_message "${MAIN_FIG1_STRING}"
 fi
@@ -151,10 +182,10 @@ if [ "$RUN_M_RANGE_EVAL" = true ] ; then
 		Rscript ./roundbyround/plottotalaccuracybymemsize.R "${MODEL_EMPIRICAL_DIR}" "${MODEL_SCORES_ACROSS_M}"
 
 		# cowplot side-by-side for r-by-r
-		M8PATH="${MODEL_EMPIRICAL_DIR}M-8_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_earlyrounds.png"
-		M10PATH="${MODEL_EMPIRICAL_DIR}M-10_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_earlyrounds.png"
-		M14PATH="${MODEL_EMPIRICAL_DIR}M-14_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_earlyrounds.png"
-		M16PATH="${MODEL_EMPIRICAL_DIR}M-16_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_earlyrounds.png"
+		M8PATH="${MODEL_EMPIRICAL_DIR}M-8_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_zoomin.png"
+		M10PATH="${MODEL_EMPIRICAL_DIR}M-10_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_zoomin.png"
+		M14PATH="${MODEL_EMPIRICAL_DIR}M-14_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_zoomin.png"
+		M16PATH="${MODEL_EMPIRICAL_DIR}M-16_noise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/fig1_rbyr_accuracy_combined_new_zoomin.png"
 		Rscript ./roundbyround/plotroundbyroundgridformemsize.R "${MODEL_EMPIRICAL_DIR}" "${M8PATH}" "${M10PATH}" "${M14PATH}" "${M16PATH}"
 	fi
 fi
@@ -313,27 +344,30 @@ if [ "$RUN_CRITICAL_MASS_SIMULATION" = true ] ; then
 	CRITMASS_OUTCOMES_FILE="${SIMULATION_DIR}/critmass_final_flip_outcomes.tsv"
 
 	echo -e "AGENT_TYPE\tN\tL\tM\tCM\tSIMULATION_NUMBER\tNEW_PROP\tFIRST_FLIP" > "${CRITMASS_OUTCOMES_FILE}"
-	declare -a NETWORK_SIZES=("24" "48" "96")
-	for CM in $(seq 0.0 0.02 0.5); do
-		for N in "${NETWORK_SIZES[@]}" ; do
-			python3 ./critmass/criticalmass.py --agents "TP" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv" &
-			python3 ./critmass/criticalmass.py --agents "BR" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv" &
-			python3 ./critmass/criticalmass.py --agents "CB" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv" &
-		done
+	# declare -a NETWORK_SIZES=("24" "48" "96")
+	# for CM in $(seq 0.0 0.02 0.5); do
+	# 	for N in "${NETWORK_SIZES[@]}" ; do
+	# 		python3 ./critmass/criticalmass.py --agents "TP" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv" &
+	# 		python3 ./critmass/criticalmass.py --agents "BR" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv" &
+	# 		python3 ./critmass/criticalmass.py --agents "CB" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv" &
+	# 		python3 ./critmass/criticalmass.py --agents "Luce" -N "${N}" -CM "${CM}" -M "12" --outputdir "${SIMULATION_DIR}" --outputflipfile "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_Luce_outcomes.tsv" &
+	# 	done
 
-		wait && clearline
+	# 	wait && clearline
 
-		for N in "${NETWORK_SIZES[@]}" ; do
-			cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
-			cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
-			cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
-			rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv"
-			rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv"
-			rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv"
-		done
-	done
+	# 	for N in "${NETWORK_SIZES[@]}" ; do
+	# 		cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
+	# 		cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
+	# 		cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
+	# 		cat "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_Luce_outcomes.tsv" >> "${CRITMASS_OUTCOMES_FILE}"
+	# 		rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_TP_outcomes.tsv"
+	# 		rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_BR_outcomes.tsv"
+	# 		rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_CB_outcomes.tsv"
+	# 		rm "${SIMULATION_DIR}/critmass_final_flip_CM${CM}_N${N}_temp_Luce_outcomes.tsv"
+	# 	done
+	# done
 
-	Rscript ./critmass/plotcritmass.R "${SIMULATION_DIR}" "${CRITMASS_OUTCOMES_FILE}"  && clearline
+	# Rscript ./critmass/plotcritmass.R "${SIMULATION_DIR}" "${CRITMASS_OUTCOMES_FILE}"  && clearline
 	
 	python3 ./critmass/critmasscompareempirical.py --empiricaldata "${DATA_BASE_PATH}/Empirical-CBBB2018-Flipping.tsv" -M "12" --updaterule "PENALIZE" --outputdir "${SIMULATION_DIR}"
 	Rscript ./critmass/plotcritmassempiricalcompare.R "${SIMULATION_DIR}" "empirical_flipping_compare_puresum.tsv" "Pure Simulation"  && clearline

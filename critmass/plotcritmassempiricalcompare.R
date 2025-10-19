@@ -26,7 +26,8 @@ source(file.path(sourceDir, "aux", "aux-functions.R"))
 if (RUN_LIVE) {
   currMachine <- Sys.info()[['nodename']]
   # dataDir = paste(sourceDir, '/output/simulation/', sep = "")
-  dataDir = paste(sourceDir, '/output/simulation/haltempirical/', sep = "")
+  dataDir = paste(sourceDir, '/output/simulation/empiricalmemory/', sep = "")
+  # dataDir = paste(sourceDir, '/output/simulation/haltempirical/', sep = "")
   # dataDir = paste(sourceDir, '/output/simulation/keeplast/', sep = "")
   targetInputFile <- "empirical_flipping_compare_puresum.tsv"
   input_title = "Pure Simulation"
@@ -46,7 +47,8 @@ if (length(args) == 3) {
 setwd(dataDir)
 df <- read.csv(targetInputFile, sep = "\t")
 df$AGENT_CLASS <- as.factor(df$AGENT_CLASS)
-levels(df$AGENT_CLASS)<-c("Optimize", "Imitate", "Threshold (TP)")
+# levels(df$AGENT_CLASS)<-c("Optimize", "Imitate", "Threshold (TP)")
+levels(df$AGENT_CLASS)<-c("Optimize", "Imitate", "Luce", "Threshold (TP)")
 
 
 
@@ -69,8 +71,8 @@ df.sum <- df.cat %>% group_by(AGENT_CLASS, FlipCat) %>%
   mutate(proportion = count / sum(count)) %>%
   mutate(rightwrong = ifelse(FlipCat == match_string, "Correct", "Incorrect")) %>%
   rename_at('AGENT_CLASS', ~'ABM')
-levels(df.sum$ABM)<-c("OP", "IM", "TP")
-df.sum$ABM <- factor(df.sum$ABM, levels=c('TP', 'OP', 'IM'))
+levels(df.sum$ABM)<-c("OP", "IM", "Luce", "TP")
+df.sum$ABM <- factor(df.sum$ABM, levels=c('TP', 'OP', 'IM', 'Luce'))
 
 
 p <- ggplot(df.sum, aes(x = ABM, y = proportion, fill = FlipCat, group = rightwrong)) +
@@ -103,6 +105,7 @@ if (RUN_LIVE) {
 
 # Remove non-flipped runs...
 df <- df %>% filter(abs_diff < 150)
+# df %>% group_by(AGENT_CLASS) %>% summarise(abs_diff = mean(abs_diff))
 
 
 
@@ -134,7 +137,8 @@ if (RUN_LIVE) { t.test(df.TP, df.CB) }
 
 p <-  ggplot(df, aes(x = round_num, fill = AGENT_CLASS)) + fig_1_single_pane_theme_no_legend() +
   geom_density(alpha=0.5, color="black", adjust=2) + 
-  scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  # scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  scale_fill_manual(values=c( BR_color, CB_color, "grey", TP_color)) +  
   ggtitle(input_title) + 
   xlab("Average Flipping Round") + ylab("Density") + theme(
     legend.text=element_text(size=30),
@@ -157,7 +161,8 @@ ggsave(plot = p,
 ## 1. plot
 p <-  ggplot(df, aes(x = abs_diff, fill = AGENT_CLASS)) + fig_1_single_pane_theme_no_legend() +
   geom_density(alpha=0.5, color="black", adjust=2) + 
-  scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  # scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  scale_fill_manual(values=c( BR_color, CB_color, "grey", TP_color)) + 
   ggtitle(input_title) + 
   xlab("Error in Predicting Empirical Trials\n(Absolute Difference in Convergence Time)") + ylab("Density") + theme(
     legend.text=element_text(size=30),
@@ -171,7 +176,8 @@ p <-  ggplot(df, aes(x = abs_diff, fill = AGENT_CLASS)) + fig_1_single_pane_them
   coord_cartesian(xlim=c(-5, 60)) + 
   geom_vline(xintercept = subset(df.aggregate, AGENT_CLASS=="Threshold (TP)")$ac.match, color=TP_color, linewidth=3) +
   geom_vline(xintercept = subset(df.aggregate, AGENT_CLASS=="Optimize")$ac.match, color=BR_color, linewidth=3) +
-  geom_vline(xintercept = subset(df.aggregate, AGENT_CLASS=="Imitate")$ac.match, color=CB_color, linewidth=3)
+  geom_vline(xintercept = subset(df.aggregate, AGENT_CLASS=="Imitate")$ac.match, color=CB_color, linewidth=3) + 
+  geom_vline(xintercept = subset(df.aggregate, AGENT_CLASS=="Luce")$ac.match, color="grey", linewidth=3)
 if (RUN_LIVE) { p }
 ggsave(plot = p,
        filename=paste("CritMass_EmpiricalCompare", ".png", sep=""),
@@ -180,10 +186,12 @@ ggsave(plot = p,
 
 p <-  ggplot(df, aes(x = abs_diff, fill = AGENT_CLASS)) + fig_1_single_pane_theme_no_legend() +
   geom_density(alpha=0.5, color="black", adjust=2) + 
-  scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  # scale_fill_manual(values=c( BR_color, CB_color, TP_color)) +  
+  scale_fill_manual(values=c( BR_color, CB_color, "grey", TP_color)) + 
   facet_wrap(~instance_id) +
   geom_vline(data = mean_values, aes(xintercept = mean_abs_diff, color = AGENT_CLASS), linewidth=3) + 
-  scale_color_manual(values=c(BR_color, CB_color, TP_color)) +
+  # scale_color_manual(values=c(BR_color, CB_color, TP_color)) +
+  scale_color_manual(values=c(BR_color, CB_color, "grey", TP_color)) +
   ggtitle(input_title) + 
   xlab("Error in Predicting Empirical Trials\n(Absolute Difference in Convergence Time)") + ylab("Density") + theme(
     legend.text=element_text(size=30),

@@ -17,7 +17,7 @@ from pathlib import Path
 parent_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(parent_dir))
 
-
+from agents.luce_agent import Luce_Agent
 from agents.tp_agent import TP_Agent
 from agents.br_agent import BR_Agent
 from agents.cb_agent import CB_Agent
@@ -35,7 +35,7 @@ FIFO_REMOVAL = "FIFO"
 UPDATE_RULE = "PENALIZE"
 
 COL_SEP = "\t"
-POSSIBLE_AGENT_TYPES = ['TP', 'BR', 'CB']
+POSSIBLE_AGENT_TYPES = ['TP', 'BR', 'CB', 'Luce']
 
 
 
@@ -52,6 +52,8 @@ def initialize_network(N, CM, AGENT_TYPE):
 				curr_agent = BR_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE, 0.0)
 			elif AGENT_TYPE == 'CB':
 				curr_agent = CB_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE)
+			elif AGENT_CLASS == 'Luce':
+				curr_agent = Luce_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE)
 			else:
 				raise Exception("Non-implemented agent type specified")
 			curr_agent.seed_full_memory('old')
@@ -77,6 +79,8 @@ def initialize_network_empirical_seed(N, CM, AGENT_TYPE, CONFED_SEED, EMP_MEMS):
 				curr_agent = BR_Agent(curr_ID, MEM_SIZE, CURR_MEM, "FIFO", UPDATE_RULE, 0.0)
 			elif AGENT_TYPE == 'CB':
 				curr_agent = CB_Agent(curr_ID, MEM_SIZE, CURR_MEM, "FIFO", UPDATE_RULE)
+			elif AGENT_CLASS == 'Luce':
+				curr_agent = Luce_Agent(curr_ID, MEM_SIZE, CURR_MEM, "FIFO", UPDATE_RULE)
 			else:
 				raise Exception("Non-implemented agent type specified")
 			curr_agent.seed_full_memory_fully_specified(CURR_MEM)

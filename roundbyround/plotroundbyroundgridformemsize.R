@@ -25,7 +25,8 @@ RUN_LIVE <- interactive()
 
 if (RUN_LIVE) {
   currMachine <- Sys.info()[['nodename']]
-  plotBase = "fig1_rbyr_accuracy_combined_new_earlyrounds.png"
+  # plotBase = "fig1_rbyr_accuracy_combined_new_earlyrounds.png"
+  plotBase = "fig1_rbyr_accuracy_combined_new_zoomin.png"
   outputDir = paste(sourceDir, '/output/model_empirical_roundbyround/', sep = "")
   pathplotM8 = paste(outputDir, 'M-8_noise-0_pop-FIFO_update-PENALIZE/', plotBase, sep = "")
   pathplotM10 =paste(outputDir, 'M-10_noise-0_pop-FIFO_update-PENALIZE/', plotBase, sep = "")

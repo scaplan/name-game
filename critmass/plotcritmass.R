@@ -50,7 +50,8 @@ df.aggregate <- df %>% group_by(AGENT_TYPE, N, M, CM) %>% reframe(pFLIP = sum(fl
 df.aggregate$N <- as.factor(df.aggregate$N)
 df.aggregate$condition <- paste(df.aggregate$N, df.aggregate$AGENT_TYPE, sep="_")
 df.aggregate$AGENT_TYPE <- as.factor(df.aggregate$AGENT_TYPE)
-levels(df.aggregate$AGENT_TYPE)<-c("Optimize", "Imitate", "Threshold (TP)")
+# levels(df.aggregate$AGENT_TYPE)<-c("Optimize", "Imitate", "Threshold (TP)")
+levels(df.aggregate$AGENT_TYPE)<-c("Optimize", "Imitate", "Luce", "Threshold (TP)")
 ##################################
 ##################################
 
@@ -58,11 +59,13 @@ levels(df.aggregate$AGENT_TYPE)<-c("Optimize", "Imitate", "Threshold (TP)")
 
 ##################################
 ## 1. plot
-p <-  ggplot(df.aggregate, aes(x = CM, y = pFLIP, color=AGENT_TYPE, shape=N, group=condition)) + fig_1_single_pane_theme_no_legend() +
+p <-  ggplot(df.aggregate %>% filter(CM < 0.36), aes(x = CM, y = pFLIP, color=AGENT_TYPE, shape=N, group=condition)) + fig_1_single_pane_theme_no_legend() +
  #  geom_rect(aes(xmin=0.2, xmax=0.3, ymin=-Inf, ymax=Inf), fill="lightblue", alpha=0.1, inherit.aes = FALSE) +
   geom_point(size=8) + geom_line(linewidth=1) + 
-  scale_color_manual(values=c(BR_color, CB_color, TP_color)) + 
+  # scale_color_manual(values=c(BR_color, CB_color, TP_color)) + 
+  scale_color_manual(values=c(BR_color, CB_color, "grey", TP_color)) + 
   xlab("Critical Mass") + ylab("P(Adopt Alternative Convention)") + 
+  annotate(geom = "rect", xmin=0.2, xmax=0.25, ymin=0, ymax=1.0, fill="#7CCD7C", alpha = 0.4) + 
   ggtitle("") + 
   theme(plot.title=element_text(size=30, hjust=0.5)) + 
   theme(
@@ -71,7 +74,8 @@ p <-  ggplot(df.aggregate, aes(x = CM, y = pFLIP, color=AGENT_TYPE, shape=N, gro
     legend.background = element_blank(),
     legend.position = "top",
     legend.box.background = element_rect(colour = "black",fill="white", linewidth=1.4)) +
-  coord_cartesian(xlim=c(0,0.5)) + scale_y_continuous(breaks=seq(0,1,0.1))
+  # coord_cartesian(xlim=c(0,0.5)) + scale_y_continuous(breaks=seq(0,1,0.1))
+  coord_cartesian(xlim=c(0,0.35)) + scale_y_continuous(breaks=seq(0,1,0.25)) # + scale_x_continuous(breaks=seq(0,0.35,0.05))
 if (RUN_LIVE) { p }
 ggsave(plot = p,
        filename=paste("CritMass_ProbFlip", ".png", sep=""),

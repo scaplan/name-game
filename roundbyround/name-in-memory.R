@@ -83,6 +83,7 @@ df.nameMemory.correl$NameNum <- as.factor(df.nameMemory.correl$NameNum)
 df.nameMemory.correl <- df.nameMemory.correl[df.nameMemory.correl$NameNum %in% c("Top", "Second", "Third", "other"), ]
 df.nameMemory.correl$NameNum <- droplevels(df.nameMemory.correl$NameNum) 
 df.nameMemory.correl$NameNum <- factor(df.nameMemory.correl$NameNum, levels=c("Top", "Second", "Third", "other"))
+df.nameMemory.correl <- df.nameMemory.correl %>% mutate(NameNum = fct_recode(NameNum, Other = "other"))
 
 df.nameMemory.correl <- df.nameMemory.correl %>%
           rename("Memory slots" = Memory)  %>%
@@ -106,7 +107,7 @@ p <- ggplot(df.nameMemory.correl.long, aes(x = Round, y = Proportion, group = Me
   geom_smooth(aes(color = Measure), method = "lm", formula = y ~ x, se = FALSE) +
   facet_wrap(~ NameNum, ncol = 2) +
   labs(color =  paste("Pearson's correlation: ", round(cor_test$estimate, 2), sep="")) + 
-  fig_1_single_pane_theme(c(0.25, 0.90)) + theme(strip.text = element_text(size = axisTextSize), legend.title = element_text(size = axisTextSize)) +
+  fig_1_single_pane_theme(c(0.75, 0.90)) + theme(strip.text = element_text(size = axisTextSize), legend.title = element_text(size = axisTextSize)) +
   # scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.1, 1.0)) + 
   scale_color_manual(values = c("Name said" = name_color,
                                 "Memory slots" = memory_color)) +
@@ -116,6 +117,57 @@ ggsave(plot = p,
        filename=paste("Name-in-mem-vs-output", ".png", sep=""),
        width = 11, height = 11, units = "in") 
 
+
+
+df.nameMemory.correl.long.early <- df.nameMemory.correl.long %>% filter(Round < 13)
+cor_test_superearly <- cor.test(df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Name said"], 
+                                df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Memory slots"], 
+                     method = "pearson")
+
+p <- ggplot(df.nameMemory.correl.long.early, aes(x = Round, y = Proportion, group = Measure, color = Measure)) +
+  geom_point() +
+  geom_smooth(aes(color = Measure), method = "lm", formula = y ~ x, se = FALSE) +
+  facet_wrap(~ NameNum, ncol = 2, scales = "free_y") +
+  labs(color =  paste("Pearson's correlation: ", round(cor_test_superearly$estimate, 2), sep="")) + 
+  fig_1_single_pane_theme(c(0.75, 0.90)) + theme(strip.text = element_text(size = axisTextSize), legend.title = element_text(size = axisTextSize)) +
+  # scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.1, 1.0)) + 
+  scale_color_manual(values = c("Name said" = name_color,
+                                "Memory slots" = memory_color)) +
+  scale_x_continuous(breaks=seq(0, 13, 2), limits = c(0, 13))
+if (RUN_LIVE) { print(p) }
+ggsave(plot = p,
+       filename=paste("Name-in-mem-vs-output-superearly", ".png", sep=""),
+       width = 11, height = 11, units = "in") 
+
+
+
+df.to.plot <- df.nameMemory.correl.long.early %>% filter(NameNum != "Other") %>% group_by(Measure, Round) %>% summarise(Proportion = mean(Proportion, na.rm = TRUE), .groups = "drop")
+cor_test_superearly <- cor.test(df.to.plot$Proportion[df.to.plot$Measure == "Name said"], 
+                                df.to.plot$Proportion[df.to.plot$Measure == "Memory slots"], 
+                                method = "pearson")
+
+p <- ggplot(df.to.plot,
+       aes(x = Round, y = Proportion,
+           color = Measure,
+           shape = Measure)) +
+  geom_point(size=8) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 2) +
+  scale_color_manual(values = c("Name said"   = name_color,
+                                "Memory slots" = memory_color)) +
+  scale_shape_manual(values = c("Name said"   = 16,
+                                "Memory slots" = 17)) +
+  labs(
+    color = paste("Pearson's correlation:",
+                  round(cor_test_superearly$estimate, 2), sep = "")
+  ) +
+  guides(shape = "none") +  # merge color + shape legend
+  fig_1_single_pane_theme(c(0.50, 0.90)) +
+  theme(strip.text   = element_text(size = axisTextSize),
+        legend.title = element_text(size = axisTextSize)) +
+  scale_x_continuous(breaks = seq(2, 12, 2), limits = c(2, 12))
+ggsave(plot = p,
+       filename=paste("Name-in-mem-vs-output-superearly", ".png", sep=""),
+       width = 11, height = 11, units = "in") 
 
 
 
@@ -150,15 +202,15 @@ write.table(ng_data.inMem, file=inMemoryOutputFile, quote=FALSE, sep='\t', row.n
 
 # for (curr_paper in PAPER_LIST) {
 #   df.curr.exp <- ng_data.inMem %>% filter(SourcePaper == curr_paper)
-#   
+# 
 #   p<-ggplot(subset(df.curr.exp, RoundNum <= 40), aes(x=RoundNum, y=inmem.prop, group=Model)) +
-#     geom_line(aes(color=Model)) + geom_point(aes(color=Model)) + ylim(0,1.0) + 
+#     geom_line(aes(color=Model)) + geom_point(aes(color=Model)) + ylim(0,1.0) +
 #     labs(y="Proportion of output names in memory", x = "Round Number",
 #          title=paste("Proportion of empirical output present\n",
 #                      "in agents' memory under {TP/BR} vs. CB (first 40 rounds)\n", curr_paper,
-#                      sep="")) + 
+#                      sep="")) +
 #     single_pane_theme_withLegend(c(.8, .15)) + TPBR_vs_CB_two_set_color()
-#   if (RUN_LIVE) { p } 
+#   if (RUN_LIVE) { p }
 #   ggsave(plot = p, filename=paste("ByRound-empirical-inmemory-BR-TP-CB-",
 #                         curr_paper, "-first40Rounds.png", sep=""),
 #          width = 10, height = 8, units = "in")

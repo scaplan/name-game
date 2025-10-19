@@ -79,6 +79,21 @@ get_accuracy_overall <- function(df, model.name) {
   return(model.accuracy)
 }
 
+get_accuracy_overall_plus_stochastic <- function(df, model.name) {
+  accuracy <- paste("Accuracy.", model.name, sep="")
+  correct <- paste("Correct.", model.name, sep="")
+  total <- paste("Total.", model.name, sep="")
+  score <- paste(model.name, ".score", sep="")
+  
+  model.accuracy <- df %>%
+    group_by(SourcePaper) %>% 
+    summarise(!!sym(total) := n(),
+              !!sym(correct) := sum(as.numeric(eval(as.name(score)))),
+              !!sym(accuracy) := eval(as.name(correct))/eval(as.name(total)))
+  
+  return(model.accuracy)
+}
+
 get_accuracy_overall_deterministic_intersect <- function(df, model.one, model.two) {
   model.one.deterministic <- paste(model.one, ".deterministic", sep="")
   model.two.deterministic <- paste(model.two, ".deterministic", sep="")
@@ -107,6 +122,9 @@ get_accuracy_overall_deterministic_intersect <- function(df, model.one, model.tw
 CB.results <- get_accuracy_overall(ng_data, "CB")
 BR.results <- get_accuracy_overall(ng_data, "BR")
 TP.results <- get_accuracy_overall(ng_data, "TP")
+Luce.results <- get_accuracy_overall_plus_stochastic(ng_data, "Luce") # new rnr
+Luce.results.PostTP <- get_accuracy_overall_plus_stochastic(ng_data %>% filter(TP.deterministic == "True"), "Luce")
+Luce.results.PostTP <- Luce.results.PostTP %>% rename(Total.Luce.PostTP = Total.Luce, Correct.Luce.PostTP = Correct.Luce, Accuracy.Luce.PostTP = Accuracy.Luce)
 CBTP_headtohead_results <- get_accuracy_overall_deterministic_intersect(ng_data, "TP", "CB")
 ###
 ng_filter <- ng_data %>% filter(BR.deterministic == "True" & TP.deterministic == "False")
@@ -114,8 +132,7 @@ BRnonprod_results <- get_accuracy_overall(ng_filter, "BR") %>%
   rename(Total.BRnonprod  = Total.BR, Correct.BRnonprod = Correct.BR, Accuracy.BRnonprod = Accuracy.BR)
 
 
-
-results_list <- list(CB.results, BR.results, TP.results, BRnonprod_results) 
+results_list <- list(CB.results, BR.results, TP.results, BRnonprod_results, Luce.results, Luce.results.PostTP) 
 combined.results <- results_list %>% reduce(full_join, by='SourcePaper')
 
 bothPapers <- combined.results %>% dplyr::summarise(Total.CB=sum(Total.CB),
@@ -129,7 +146,13 @@ bothPapers <- combined.results %>% dplyr::summarise(Total.CB=sum(Total.CB),
                                       Accuracy.TP=mean(Accuracy.TP),
                                       Total.BRnonprod=sum(Total.BRnonprod),
                                       Correct.BRnonprod=sum(Correct.BRnonprod),
-                                      Accuracy.BRnonprod=mean(Accuracy.BRnonprod))
+                                      Accuracy.BRnonprod=mean(Accuracy.BRnonprod),
+                                      Total.Luce=sum(Total.Luce),
+                                      Correct.Luce=sum(Correct.Luce),
+                                      Accuracy.Luce=mean(Accuracy.Luce),
+                                      Total.Luce.PostTP=sum(Total.Luce.PostTP),
+                                      Correct.Luce.PostTP=sum(Correct.Luce.PostTP),
+                                      Accuracy.Luce.PostTP=mean(Accuracy.Luce.PostTP))
 bothPapers$SourcePaper = "Both"
 combined.results <- bind_rows(combined.results, bothPapers)
 combined.results$M <- M
@@ -183,11 +206,13 @@ sink_vars(c("BRnonprod.hits", "BRnonprod.total", "TP.BRnonprod.prop", "CB.BRnonp
 CB.results.byround <- get_accuracy_by_round_by_source(ng_data, "CB", "Source") # "get_accuracy_by_round_by_source" is defined in aux-functions.R
 BR.results.byround <- get_accuracy_by_round_by_source(ng_data, "BR", "Source")
 TP.results.byround <- get_accuracy_by_round_by_source(ng_data, "TP", "Source")
-
+# Luce.results.byround <- get_accuracy_by_round_with_stochastic(ng_data %>% filter(TP.deterministic == "True"), "Luce", "Source")
+Luce.results.byround <- get_accuracy_by_round_with_stochastic(ng_data, "Luce", "Source")
 ng_filter <- ng_data %>% filter(BR.deterministic == "True" & TP.deterministic == "False")
 BRnonprod_results.byRound <- get_accuracy_by_round_by_source(ng_filter, "BR", "Source") %>% mutate(Model = "BRnonprod")
 
-df.all.by.round.by.source <- bind_rows(CB.results.byround, BR.results.byround, TP.results.byround, BRnonprod_results.byRound)
+# sample.number.distribution <- df.all.by.round.by.source %>% group_by(RoundNum, Model) %>% summarise(Total = sum(Total)) %>% filter(Model != "BRnonprod")
+df.all.by.round.by.source <- bind_rows(CB.results.byround, BR.results.byround, TP.results.byround, Luce.results.byround, BRnonprod_results.byRound)
 if (RUN_LIVE) { df.all.by.round.by.source }
 write.table(df.all.by.round.by.source, file=summaryRoundByRoundFile, quote=FALSE, sep='\t', row.names = FALSE)
 ##################################
@@ -200,14 +225,18 @@ write.table(df.all.by.round.by.source, file=summaryRoundByRoundFile, quote=FALSE
 ## 3. Plotting
 
 df.all.by.round.by.source$Model<-as.factor(df.all.by.round.by.source$Model)
-levels(df.all.by.round.by.source$Model)<-c("Optimize", "Optimize (pre-TP)", "Imitate", "Threshold (TP)")
+# levels(df.all.by.round.by.source$Model)<-c("Optimize", "Optimize (pre-TP)", "Imitate", "Luce (post-TP)", "Threshold (TP)")
+df.all.by.round.by.source <- df.all.by.round.by.source %>% filter(Model != "BRnonprod") %>%  mutate(Model = fct_drop(Model))
+levels(df.all.by.round.by.source$Model)<-c("Optimize", "Imitate", "Luce", "Threshold (TP)")
 df.all.by.round.by.source.bothPaperAvg <- df.all.by.round.by.source %>% group_by(RoundNum, Model) %>% dplyr::summarise(Accuracy=mean(Accuracy,na.rm=T), TotalTrials = sum(Total))
 
-
 # for (roundSet in c("earlyrounds", "allrounds"))  {
-for (roundSet in c("earlyrounds"))  {
+# for (roundSet in c("earlyrounds"))  {
+for (roundSet in c("zoomin"))  {
   if (roundSet == "earlyrounds") {
     df.to.plot <- subset(df.all.by.round.by.source.bothPaperAvg, RoundNum <= 40)
+  } else if (roundSet == "zoomin") {
+    df.to.plot <- subset(df.all.by.round.by.source.bothPaperAvg, RoundNum <= 40 & RoundNum > 12)
   } else {
     # Placeholder in case we want to include all rounds (it gets very sparse that far out though)
     df.to.plot <- df.all.by.round.by.source.bothPaperAvg
@@ -216,11 +245,14 @@ for (roundSet in c("earlyrounds"))  {
   df.to.plot <- subset(df.to.plot, TotalTrials >= 10)
   
   p<-ggplot(df.to.plot, aes(x=RoundNum, y=Accuracy, shape = Model, color = Model)) +
-    geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color() + four_model_shape() +
+    # geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + five_model_color() + five_model_shape() +
+    geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color_luce_simple() + four_model_shape_luce_simple() +
     labs(y="Model Accuracy\nP(Predict Participant's Next Choice)", x = "Round") +
     fig_1_single_pane_theme(c(0.75, 0.15)) +
     # ylim(0,1) +
-    scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.1, 1.0))
+    scale_x_continuous(breaks=seq(12, 40, 4)) +
+    scale_y_continuous(breaks=seq(0.3, 1, 0.15), limits = c(0.3, 0.95))
+    
   
   # Add M annotation
   p <- ggdraw(p) + draw_text(paste("M = ", M, sep=""), x = 0.97, y = 0.97, hjust = 1, vjust = 1, size = axisTextSizeBig)

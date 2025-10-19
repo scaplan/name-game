@@ -20,6 +20,8 @@ from agents.tp_agent import TP_Agent
 from agents.br_agent import BR_Agent
 from agents.br_picksecond_agent import BR_Agent_PickSecond
 from agents.cb_agent import CB_Agent
+from agents.twothirds_agent import Twothirds_Agent # new for R&R
+from agents.luce_agent import Luce_Agent # new for R&R
 
 buffer = 4*" "
 VERBOSE_MODE = True
@@ -58,7 +60,9 @@ def play_game(curr_data, output_file):
 					"BR":[0,0],
 					"TP":[0,0],
 					"BR_non_prod":[0,0],
-					"headtohead_CBTP":[0,0,0]
+					"Luce_post_TP":[0,0],
+					"headtohead_CBTP":[0,0,0],
+					"headtohead_TPtwothirds":[0,0,0]
 					}
 
 	agent_nums_used = set()
@@ -66,6 +70,8 @@ def play_game(curr_data, output_file):
 	agent_dict_CB = {}
 	agent_dict_BR = {}
 	agent_dict_TP = {}
+	agent_dict_twothird = {}
+	agent_dict_luce = {}
 
 	for curr_row in curr_data:
 		LocalRowNum = curr_row[0]
@@ -101,6 +107,8 @@ def play_game(curr_data, output_file):
 			if curr_ID not in agent_nums_used:
 				agent_nums_used.add(curr_ID)
 				agent_dict_CB[curr_ID] = CB_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
+				agent_dict_twothird[curr_ID] = Twothirds_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
+				agent_dict_luce[curr_ID] = Luce_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE) # new 
 				if BR_PICK_SECOND:
 					agent_dict_BR[curr_ID] = BR_Agent_PickSecond(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, BR_NOISE_PARAM)
 				else:
@@ -115,14 +123,16 @@ def play_game(curr_data, output_file):
 			curr_CB_agent = agent_dict_CB.get(curr_ID)
 			curr_BR_agent = agent_dict_BR.get(curr_ID)
 			curr_TP_agent = agent_dict_TP.get(curr_ID)
+			curr_TwoThirds_agent = agent_dict_twothird.get(curr_ID)
+			curr_Luce_agent = agent_dict_luce.get(curr_ID)
 
-			assert round_num == curr_CB_agent.roundsplayed+1 and round_num == curr_TP_agent.roundsplayed+1 and round_num == curr_BR_agent.roundsplayed+1
+			assert round_num == curr_CB_agent.roundsplayed+1 and round_num == curr_TP_agent.roundsplayed+1 and round_num == curr_BR_agent.roundsplayed+1 and round_num == curr_TwoThirds_agent.roundsplayed+1 and round_num == curr_Luce_agent.roundsplayed+1
 			output_list = [ExpID, SourcePaper, str(MEM_SIZE), str(BR_NOISE_PARAM), curr_ID, curr_role, isconfed, str(round_num), curr_name, str(interlocutor_num), interlocutor_name,
-						   curr_CB_agent.get_name(), curr_BR_agent.get_name(), curr_TP_agent.get_name(),
+						   curr_CB_agent.get_name(), curr_BR_agent.get_name(), curr_TP_agent.get_name(), curr_Luce_agent.get_name(),
 						   str(curr_CB_agent.in_deterministic_state()), str(curr_BR_agent.in_deterministic_state()),
 						   str(curr_TP_agent.in_deterministic_state()), str(curr_CB_agent.eval_name_trial(curr_name)),
-						   str(curr_BR_agent.eval_name_trial(curr_name)), str(curr_TP_agent.eval_name_trial(curr_name)),
-						   curr_CB_agent.mem_to_str_semicolon(), curr_BR_agent.mem_to_str_semicolon(), curr_TP_agent.mem_to_str_semicolon()]
+						   str(curr_BR_agent.eval_name_trial(curr_name)), str(curr_TP_agent.eval_name_trial(curr_name)), str(curr_Luce_agent.eval_name_trial(curr_name)),
+						   curr_CB_agent.mem_to_str_semicolon(), curr_BR_agent.mem_to_str_semicolon(), curr_TP_agent.mem_to_str_semicolon(), curr_Luce_agent.mem_to_str_semicolon()]
 
 			output_string = COL_SEP.join(output_list)
 			output_file.write(output_string+"\n")
@@ -140,6 +150,8 @@ def play_game(curr_data, output_file):
 				if curr_TP_agent.in_deterministic_state():
 					results_dict.get("TP")[1] += 1
 					results_dict.get("TP")[0] += curr_TP_agent.eval_name_trial(curr_name)
+					results_dict.get("Luce_post_TP")[1] += 1
+					results_dict.get("Luce_post_TP")[0] += curr_Luce_agent.eval_name_trial(curr_name)
 				# BR predictions when TP is below productivity threshold
 				if curr_BR_agent.in_deterministic_state() and not curr_TP_agent.in_deterministic_state():
 					results_dict.get("BR_non_prod")[1] += 1
@@ -148,6 +160,13 @@ def play_game(curr_data, output_file):
 					results_dict.get("headtohead_CBTP")[2] += 1
 					results_dict.get("headtohead_CBTP")[0] += curr_CB_agent.eval_name_trial(curr_name)
 					results_dict.get("headtohead_CBTP")[1] += curr_TP_agent.eval_name_trial(curr_name)
+				# TP predictions when TP is above productivity threshold but two-thirds isn't yet
+				if curr_TP_agent.in_deterministic_state() and not curr_TwoThirds_agent.in_deterministic_state():
+					results_dict.get("headtohead_TPtwothirds")[2] += 1
+					results_dict.get("headtohead_TPtwothirds")[0] += curr_TP_agent.eval_name_trial(curr_name)
+					results_dict.get("headtohead_TPtwothirds")[1] += curr_TwoThirds_agent.eval_name_trial(curr_name)
+
+
 
 			######################
 			## update agent memory
@@ -155,6 +174,11 @@ def play_game(curr_data, output_file):
 			curr_CB_agent.compare_add_name(curr_name, interlocutor_name)
 			curr_BR_agent.compare_add_name(curr_name, interlocutor_name)
 			curr_TP_agent.compare_add_name(curr_name, interlocutor_name)
+			curr_TwoThirds_agent.compare_add_name(curr_name, interlocutor_name)
+			curr_Luce_agent.compare_add_name(curr_name, interlocutor_name)
+			# print(curr_TP_agent.roundsplayed, curr_TP_agent.check_productivity())
+			# print(curr_TwoThirds_agent.roundsplayed, curr_TwoThirds_agent.check_productivity())
+			# print()
 
 	return results_dict
 
@@ -278,15 +302,17 @@ if __name__ == "__main__":
 	global_results_dict = {"CB":[0,0],
 						   "BR":[0,0],
 						   "TP":[0,0],
+						   "Luce_post_TP":[0,0],
 						   "BR_non_prod":[0,0],
-						   "headtohead_CBTP":[0,0,0]
+						   "headtohead_CBTP":[0,0,0],
+						   "headtohead_TPtwothirds":[0,0,0]
 	}
 
 	with open(OUTPUT_FILENAME_MAIN, 'w') as output_file_main:
 		with open(OUTPUT_FILENAME_SIMPLE_NUMBERS, 'w') as output_file_simple:
 			header_list = ["DataFile", "SourcePaper", "MemLimit", "BRNoiseParam", "AgentNum", "AgentRole", "IsConfed", "RoundNum", "EmpiricalOutput", "InterlocutorNum",
-						   "InterlocutorOutput", "CB-output", "BR-output", "TP-output", "CB-deterministic", "BR-deterministic", "TP-deterministic",
-						   "CB-score", "BR-score", "TP-score", "CB-memory", "BR-memory", "TP-memory"]
+						   "InterlocutorOutput", "CB-output", "BR-output", "TP-output", "Luce-output", "CB-deterministic", "BR-deterministic", "TP-deterministic",
+						   "CB-score", "BR-score", "TP-score", "Luce-score", "CB-memory", "BR-memory", "TP-memory", "Luce-memory"]
 			header_str = COL_SEP.join(header_list)
 			output_file_main.write(header_str+"\n")
 
@@ -303,10 +329,12 @@ if __name__ == "__main__":
 
 			output_file_simple.write(f"{'Model': >21}{buffer}{'correct rounds': >15}{buffer}{'correct (ABM2)': >15}{buffer}{'total predictions': >15}\n")
 			output_file_simple.write((80*"#")+"\n")
-			for agent_compare_type in ["CB", "BR", "TP", "headtohead_CBTP", "BR_non_prod"]:
+			for agent_compare_type in ["CB", "BR", "TP", "Luce_post_TP", "headtohead_CBTP", "BR_non_prod", "headtohead_TPtwothirds"]:
 				curr_agent_type_results = global_results_dict.get(agent_compare_type)
 				if agent_compare_type == "headtohead_CBTP":
 					output_file_simple.write(f"{'Head-to-head (CB, TP):': >21}{buffer}{curr_agent_type_results[0]: >14}{buffer}{curr_agent_type_results[1]: >15}{buffer}{curr_agent_type_results[2]: >17}\n")
+				elif agent_compare_type == "headtohead_TPtwothirds":
+					output_file_simple.write(f"{'Head-to-head (TP, 2/3rds):': >21}{buffer}{curr_agent_type_results[0]: >10}{buffer}{curr_agent_type_results[1]: >15}{buffer}{curr_agent_type_results[2]: >17}\n")
 				else:
 					output_file_simple.write(f"{agent_compare_type: >21}:{buffer}{curr_agent_type_results[0]: >14}{buffer}{' ': >14}{buffer}{curr_agent_type_results[1]: >18}\n")
 			output_file_simple.write((80*"#")+"\n\n")

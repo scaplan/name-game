@@ -103,7 +103,7 @@ if __name__ == '__main__':
                         help="Print initial results to terminal (useful for debugging)")
 	parse_args_and_defaults(args = parser.parse_args())
 
-	MEMORY_INDEX = 21 if USE_BR_MEM_INSTEAD_OF_TP else 22
+	MEMORY_INDEX = 23 if USE_BR_MEM_INSTEAD_OF_TP else 24 # These need to be aligned with actual columns from "unifiedempiricalnamegame.py" since hardcoded...
 	round_dict = defaultdict(lambda: [])
 	
 	with open(NG_SOURCE_FILENAME, 'r') as f:
