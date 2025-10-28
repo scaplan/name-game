@@ -7,7 +7,7 @@ Please email any / all of the (co-first) authors if you have questions.
 
 ### Preprint
 
-[available on OSF]([https://github.com/user/repo/blob/branch/other_file.md](https://osf.io/preprints/psyarxiv/xucka_v1))
+[available on OSF](https://osf.io/preprints/psyarxiv/xucka_v1)
 
 
 ---
