@@ -69,6 +69,9 @@ extract_paper_figs() {
 	# SI BR+Noise Critical Mass
 	cp "${STAT_PLOT_DIR}/simulation/CritMass_ProbFlip_MixLuce.png" "${PAPER_DIR}/SC_SI_CritMass_ProbFlip_MixLuce.png"
 
+	# SI Luce+Noise
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_rbyr_accuracy_LucewithNoisePickSecondChoice.png" "${PAPER_DIR}/SC_SI_rbyr_accuracy_LucewithNoisePickSecondChoice.png"
+
 
 	# SI Bayes Analysis
 	cp "${STAT_PLOT_DIR}/bayestippingpoint/plots/Bayes-tipping-point-PRIOR-0.8-SCALAR-0.22.png" "${PAPER_DIR}/SC_SI_bayes_figure.png"
