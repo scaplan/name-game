@@ -22,6 +22,9 @@ extract_paper_figs() {
 	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-PENALIZE/SC_MR_Results.png" "${PAPER_DIR}/SC_fig4_mindreading.png"
 	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-BUFFER/SC_MR_Results.png" "${PAPER_DIR}/SC_SI_keeplast_mindreading.png"
 
+	# SI Two-Thirds comparison
+	cp "${STAT_PLOT_DIR}SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SI_compare_TP_two-thirds.png"
+
 	# SI critmass puresim
 	cp "${STAT_PLOT_DIR}/simulation/CritMass_EmpiricalCompare.png" "${PAPER_DIR}/SC_SI_puresim_conv.png"
 
