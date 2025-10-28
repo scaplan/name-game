@@ -48,6 +48,14 @@ if (length(args) == 2) {
 ## 0. Reading in data and drop unneeded columns
 setwd(dataDir)
 result_data <- read_tsv(targetInputFile, show_col_types = FALSE)
+
+# Quick stats first
+TP.hits <- sum(result_data$`TP-CORRECT`)
+TWOTHIRD.hits <- sum(result_data$`TWOTHIRDS-CORRECT`)
+denom <- sum(result_data$`TOTAL-ROUNDS`)
+prop.test(x = c(TP.hits, TWOTHIRD.hits), n = c(denom, denom))
+raw.diff <- (TP.hits/denom) - (TWOTHIRD.hits/denom)
+
 result_data <- result_data %>% mutate(TP = `TP-CORRECT` / `TOTAL-ROUNDS`,
                                       `2/3rds` = `TWOTHIRDS-CORRECT` / `TOTAL-ROUNDS`)  %>%
   select(c(MEMSIZE, TP, `2/3rds`)) %>%
@@ -73,27 +81,7 @@ p <- ggplot(df_long, aes(x = M, y = Accuracy, fill = Threshold)) +
   )
 if (RUN_LIVE) { p }
 ggsave(plot = p,
-       filename="figSX_compare_TP_two-thirds.png",
+       filename="SI_compare_TP_two-thirds.png",
        width = 11, height = 11, units = "in")
 
-##################################
-## 1. Make plot over M
 
-wide.data$Model<-as.factor(wide.data$Model)
-wide.data <- wide.data %>%
-  mutate(Model = fct_relevel(Model, "Optimize", "Optimize (pre-TP)", "Imitate", "Luce (post-TP)", "Threshold (TP)"))
-# levels(wide.data$Model)<-c("Optimize", "Optimize (pre-TP)", "Imitate", "Luce (post-TP)", "Threshold (TP)")
-
-p<-ggplot(wide.data, aes(x=M, y=Accuracy, shape = Model, color = Model)) +
-  geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + five_model_color() + five_model_shape() +
-  labs(y="Model Accuracy\nP(Predict Participant's Next Choice)", x = "Memory Size (M)") +
-  fig_1_single_pane_theme(c(0.75, 0.15)) +
-  scale_y_continuous(breaks=seq(0.4, 1.0, 0.1), limits = c(0.45, 1.0)) + 
-  scale_x_continuous(breaks=seq(8, 26, 4), limits = c(7, 27))
-if (RUN_LIVE) { p }
-
-ggsave(plot = p,
-       filename="figS1_total_accuracy_by_M.png",
-       width = 11, height = 11, units = "in")
-##################################
-##################################

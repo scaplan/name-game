@@ -52,57 +52,6 @@ levels(df$AGENT_CLASS)<-c("Optimize", "Imitate", "Luce", "Threshold (TP)")
 
 
 
-# Create buckets....
-# Too fast
-# Within 10(+/-)
-# Too slow
-# Never flipped
-match_string <- "Good Match (within 15 rounds)"
-
-df.cat <- df %>% mutate(FlipCat = case_when(abs_diff <= 15 ~ match_string,
-                                        abs_diff >= 150 ~ "Never Flipped",
-                                        FLIP_ROUND - round_num > 15 ~ "Too Fast",
-                                        TRUE ~ "Too Slow")
-)
-
-df.sum <- df.cat %>% group_by(AGENT_CLASS, FlipCat) %>%
-  summarise(count = n(), .groups = "drop") %>%
-  group_by(AGENT_CLASS) %>%
-  mutate(proportion = count / sum(count)) %>%
-  mutate(rightwrong = ifelse(FlipCat == match_string, "Correct", "Incorrect")) %>%
-  rename_at('AGENT_CLASS', ~'ABM')
-levels(df.sum$ABM)<-c("OP", "IM", "Luce", "TP")
-df.sum$ABM <- factor(df.sum$ABM, levels=c('TP', 'OP', 'IM', 'Luce'))
-
-
-p <- ggplot(df.sum, aes(x = ABM, y = proportion, fill = FlipCat, group = rightwrong)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 1)) +
- # geom_bar(stat = "identity", position = "fill") +
-  scale_fill_manual(values = c("#1f78b4", "#d62728", "#ffcc00", "#6a3d9a")) +
-  scale_y_continuous( breaks=c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0), limits = c(0, 1))  + 
-  facet_wrap(~rightwrong) +
-  labs(title = "Pure Simulation Outcome Type (Exact Convergence Window)",
-       x = "ABM",
-       y = "Proportion",
-       fill = "Outcome Type") +
-  single_pane_theme() +
-  theme(legend.position="top")
-if (RUN_LIVE) { p }
-# ggsave(plot = p,
-#        filename=paste("Crit-Mass_OutcomeClass", ".png", sep=""),
-#        width = 16.5, height = 11, units = "in") 
-
-
-# Paper stats
-if (RUN_LIVE) { 
-  prop_table <- xtabs(count ~ ABM + rightwrong, data = df.sum)
-  pairwise.prop.test(prop_table, p.adjust.method = "bonferroni")
-}
-
-
-
-
-
 # Remove non-flipped runs...
 df <- df %>% filter(abs_diff < 150)
 # df %>% group_by(AGENT_CLASS) %>% summarise(abs_diff = mean(abs_diff))
@@ -112,9 +61,9 @@ df <- df %>% filter(abs_diff < 150)
 # df %>% group_by(instance_id) %>% dplyr::summarize(emp.flip.round = mean(FLIP_ROUND))
 # df %>% group_by(AGENT_CLASS) %>% dplyr::summarize(ABM.flip = mean(round_num))
 if (RUN_LIVE) { mean(df$FLIP_ROUND) }
-if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Imitate")$FLIP_ROUND) }
-if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Optimize")$FLIP_ROUND) }
-if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Threshold (TP)")$FLIP_ROUND) }
+# if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Imitate")$FLIP_ROUND) }
+# if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Optimize")$FLIP_ROUND) }
+# if (RUN_LIVE) { mean(subset(df, AGENT_CLASS == "Threshold (TP)")$FLIP_ROUND) }
 
 df.aggregate <- df %>% group_by(AGENT_CLASS) %>% dplyr::summarize(ac.match = mean(abs_diff), emp.flip.round = mean(FLIP_ROUND), sim.flip.round = mean(round_num), n = n())
 if (RUN_LIVE) { df.aggregate }
@@ -209,4 +158,55 @@ ggsave(plot = p,
        width = 22, height = 14, units = "in") 
 ##################################
 ##################################
+
+
+
+
+
+# Create buckets....
+# Too fast
+# Within 10(+/-)
+# Too slow
+# Never flipped
+# match_string <- "Good Match (within 15 rounds)"
+# 
+# df.cat <- df %>% mutate(FlipCat = case_when(abs_diff <= 15 ~ match_string,
+#                                         abs_diff >= 150 ~ "Never Flipped",
+#                                         FLIP_ROUND - round_num > 15 ~ "Too Fast",
+#                                         TRUE ~ "Too Slow")
+# )
+# 
+# df.sum <- df.cat %>% group_by(AGENT_CLASS, FlipCat) %>%
+#   summarise(count = n(), .groups = "drop") %>%
+#   group_by(AGENT_CLASS) %>%
+#   mutate(proportion = count / sum(count)) %>%
+#   mutate(rightwrong = ifelse(FlipCat == match_string, "Correct", "Incorrect")) %>%
+#   rename_at('AGENT_CLASS', ~'ABM')
+# levels(df.sum$ABM)<-c("OP", "IM", "Luce", "TP")
+# df.sum$ABM <- factor(df.sum$ABM, levels=c('TP', 'OP', 'IM', 'Luce'))
+# 
+# 
+# p <- ggplot(df.sum, aes(x = ABM, y = proportion, fill = FlipCat, group = rightwrong)) +
+#   geom_bar(stat = "identity", position = position_dodge(width = 1)) +
+#  # geom_bar(stat = "identity", position = "fill") +
+#   scale_fill_manual(values = c("#1f78b4", "#d62728", "#ffcc00", "#6a3d9a")) +
+#   scale_y_continuous( breaks=c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0), limits = c(0, 1))  + 
+#   facet_wrap(~rightwrong) +
+#   labs(title = "Pure Simulation Outcome Type (Exact Convergence Window)",
+#        x = "ABM",
+#        y = "Proportion",
+#        fill = "Outcome Type") +
+#   single_pane_theme() +
+#   theme(legend.position="top")
+# if (RUN_LIVE) { p }
+# # ggsave(plot = p,
+# #        filename=paste("Crit-Mass_OutcomeClass", ".png", sep=""),
+# #        width = 16.5, height = 11, units = "in") 
+# 
+# 
+# # Paper stats
+# if (RUN_LIVE) { 
+#   prop_table <- xtabs(count ~ ABM + rightwrong, data = df.sum)
+#   pairwise.prop.test(prop_table, p.adjust.method = "bonferroni")
+# }
 

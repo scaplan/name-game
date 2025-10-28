@@ -282,7 +282,8 @@ load_in_libraries <- function(x) {
                 "cowplot",
                 "ggpubr",
                 "ggrepel",
-                "xtable")
+                "xtable",
+                "ggtext")
   
   # Loop over each package and call ensure_package
   for (pkg in packages) {

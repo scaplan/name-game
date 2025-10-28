@@ -64,7 +64,6 @@ y_labels <- sapply(names(agent_colors), function(x) {
 names(y_labels) <- names(agent_colors)
 
 
-library(ggtext)
 
 df.to.plot <- df %>% filter(W == 10) %>%
   mutate(AGENT_TYPE = factor(AGENT_TYPE, levels = c("Luce", "Threshold (TP)", "Imitate", "Optimize")))

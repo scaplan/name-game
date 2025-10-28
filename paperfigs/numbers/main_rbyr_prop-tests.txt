@@ -1,73 +1,99 @@
 TP.hits :
-[1] 7211
+[1] 7792
 
 TP.total :
-[1] 8155
+[1] 8868
 
 BR.hits :
-[1] 9643
+[1] 11908
 
 BR.total :
-[1] 12036
+[1] 15843
 
 TP.BR.prop :
 
 	2-sample test for equality of proportions with continuity correction
 
 data:  c(TP.hits, BR.hits) out of c(TP.total, BR.total)
-X-squared = 242.52, df = 1, p-value < 2.2e-16
+X-squared = 566.81, df = 1, p-value < 2.2e-16
 alternative hypothesis: two.sided
 95 percent confidence interval:
- 0.07300746 0.09311854
+ 0.1173887 0.1366903
 sample estimates:
    prop 1    prop 2 
-0.8842428 0.8011798 
+0.8786649 0.7516253 
 
 
 TP.hits :
-[1] 7211
+[1] 7792
 
 TP.total :
-[1] 8155
+[1] 8868
 
 CB.hits :
-[1] 7975
+[1] 10195
 
 CB.total :
-[1] 9689
+[1] 12575
 
 TP.CB.prop :
 
 	2-sample test for equality of proportions with continuity correction
 
 data:  c(TP.hits, CB.hits) out of c(TP.total, CB.total)
-X-squared = 130.11, df = 1, p-value < 2.2e-16
+X-squared = 177, df = 1, p-value < 2.2e-16
 alternative hypothesis: two.sided
 95 percent confidence interval:
- 0.05073851 0.07155036
+ 0.05818651 0.07767204
 sample estimates:
    prop 1    prop 2 
-0.8842428 0.8230984 
+0.8786649 0.8107356 
+
+
+TP.hits :
+[1] 7792
+
+TP.total :
+[1] 8868
+
+Luce.hits :
+[1] 9311
+
+Luce.total :
+[1] 17366
+
+TP.Luce.prop :
+
+	2-sample test for equality of proportions with continuity correction
+
+data:  c(TP.hits, Luce.hits) out of c(TP.total, Luce.total)
+X-squared = 3033.3, df = 1, p-value < 2.2e-16
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.3323575 0.3526470
+sample estimates:
+   prop 1    prop 2 
+0.8786649 0.5361626 
 
 
 BRnonprod.hits :
-[1] 2446
+[1] 4130
 
 BRnonprod.total :
-[1] 3898
+[1] 6994
 
 TP.BRnonprod.prop :
 
 	2-sample test for equality of proportions with continuity correction
 
 data:  c(TP.hits, BRnonprod.hits) out of c(TP.total, BRnonprod.total)
-X-squared = 1089.9, df = 1, p-value < 2.2e-16
+X-squared = 1737.6, df = 1, p-value < 2.2e-16
 alternative hypothesis: two.sided
 95 percent confidence interval:
- 0.2398615 0.2736215
+ 0.2746519 0.3016655
 sample estimates:
    prop 1    prop 2 
-0.8842428 0.6275013 
+0.8786649 0.5905061 
 
 
 CB.BRnonprod.prop :
@@ -75,12 +101,12 @@ CB.BRnonprod.prop :
 	2-sample test for equality of proportions with continuity correction
 
 data:  c(CB.hits, BRnonprod.hits) out of c(CB.total, BRnonprod.total)
-X-squared = 593.95, df = 1, p-value < 2.2e-16
+X-squared = 1110.1, df = 1, p-value < 2.2e-16
 alternative hypothesis: two.sided
 95 percent confidence interval:
- 0.1784442 0.2127500
+ 0.2067134 0.2337455
 sample estimates:
    prop 1    prop 2 
-0.8230984 0.6275013 
+0.8107356 0.5905061 
 
 

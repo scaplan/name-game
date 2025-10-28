@@ -120,24 +120,24 @@ ggsave(plot = p,
 
 
 df.nameMemory.correl.long.early <- df.nameMemory.correl.long %>% filter(Round < 13)
-cor_test_superearly <- cor.test(df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Name said"], 
-                                df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Memory slots"], 
-                     method = "pearson")
 
-p <- ggplot(df.nameMemory.correl.long.early, aes(x = Round, y = Proportion, group = Measure, color = Measure)) +
-  geom_point() +
-  geom_smooth(aes(color = Measure), method = "lm", formula = y ~ x, se = FALSE) +
-  facet_wrap(~ NameNum, ncol = 2, scales = "free_y") +
-  labs(color =  paste("Pearson's correlation: ", round(cor_test_superearly$estimate, 2), sep="")) + 
-  fig_1_single_pane_theme(c(0.75, 0.90)) + theme(strip.text = element_text(size = axisTextSize), legend.title = element_text(size = axisTextSize)) +
-  # scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.1, 1.0)) + 
-  scale_color_manual(values = c("Name said" = name_color,
-                                "Memory slots" = memory_color)) +
-  scale_x_continuous(breaks=seq(0, 13, 2), limits = c(0, 13))
-if (RUN_LIVE) { print(p) }
-ggsave(plot = p,
-       filename=paste("Name-in-mem-vs-output-superearly", ".png", sep=""),
-       width = 11, height = 11, units = "in") 
+# cor_test_superearly <- cor.test(df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Name said"], 
+#                                 df.nameMemory.correl.long.early$Proportion[df.nameMemory.correl.long.early$Measure == "Memory slots"], 
+#                      method = "pearson")
+# p <- ggplot(df.nameMemory.correl.long.early, aes(x = Round, y = Proportion, group = Measure, color = Measure)) +
+#   geom_point() +
+#   geom_smooth(aes(color = Measure), method = "lm", formula = y ~ x, se = FALSE) +
+#   facet_wrap(~ NameNum, ncol = 2, scales = "free_y") +
+#   labs(color =  paste("Pearson's correlation: ", round(cor_test_superearly$estimate, 2), sep="")) + 
+#   fig_1_single_pane_theme(c(0.75, 0.90)) + theme(strip.text = element_text(size = axisTextSize), legend.title = element_text(size = axisTextSize)) +
+#   # scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.1, 1.0)) + 
+#   scale_color_manual(values = c("Name said" = name_color,
+#                                 "Memory slots" = memory_color)) +
+#   scale_x_continuous(breaks=seq(0, 13, 2), limits = c(0, 13))
+# if (RUN_LIVE) { print(p) }
+# ggsave(plot = p,
+#        filename=paste("Name-in-mem-vs-output-superearly-panel", ".png", sep=""),
+#        width = 11, height = 11, units = "in") 
 
 
 
@@ -164,7 +164,9 @@ p <- ggplot(df.to.plot,
   fig_1_single_pane_theme(c(0.50, 0.90)) +
   theme(strip.text   = element_text(size = axisTextSize),
         legend.title = element_text(size = axisTextSize)) +
-  scale_x_continuous(breaks = seq(2, 12, 2), limits = c(2, 12))
+  scale_x_continuous(breaks = seq(2, 12, 2), limits = c(2, 12)) +
+  scale_y_continuous(breaks = seq(0.05, 0.2, 0.05), limits = c(0.04, 0.16))
+if (RUN_LIVE) { print(p) }
 ggsave(plot = p,
        filename=paste("Name-in-mem-vs-output-superearly", ".png", sep=""),
        width = 11, height = 11, units = "in") 

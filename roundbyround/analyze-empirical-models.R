@@ -162,17 +162,19 @@ if (RUN_LIVE) { combined.results }
 write.table(combined.results, file=summaryFile, quote=FALSE, sep='\t', row.names = FALSE)
 
 
-# CBBB2018 just post-confed
-ng_data_late <- subset(ng_data, RoundNum > 20)
+
+# ng_data_late <- subset(ng_data, RoundNum > 20)
+ng_data_late <- subset(ng_data, RoundNum > 12)
 CB.results <- get_accuracy_overall(ng_data_late, "CB")
 BR.results <- get_accuracy_overall(ng_data_late, "BR")
 TP.results <- get_accuracy_overall(ng_data_late, "TP")
+Luce.results <- get_accuracy_overall_plus_stochastic(ng_data_late, "Luce") # new rnr
 CBTP_headtohead_results <- get_accuracy_overall_deterministic_intersect(ng_data_late, "TP", "CB")
 ###
 ng_filter <- ng_data_late %>% filter(BR.deterministic == "True" & TP.deterministic == "False")
 BRnonprod_results <- get_accuracy_overall(ng_filter, "BR") %>%
   rename(Total.BRnonprod  = Total.BR, Correct.BRnonprod = Correct.BR, Accuracy.BRnonprod = Accuracy.BR)
-results_list <- list(CB.results, BR.results, TP.results, BRnonprod_results) 
+results_list <- list(CB.results, BR.results, TP.results, BRnonprod_results, Luce.results) 
 combined.results <- results_list %>% reduce(full_join, by='SourcePaper')
 
 
@@ -189,6 +191,11 @@ CB.hits <- sum(CB.results$Correct.CB)
 CB.total <- sum(CB.results$Total.CB)
 TP.CB.prop <- prop.test(x = c(TP.hits, CB.hits), n = c(TP.total, CB.total))
 sink_vars(c("TP.hits", "TP.total", "CB.hits", "CB.total", "TP.CB.prop"), "proportion-tests.txt", TRUE)
+
+Luce.hits <- sum(Luce.results$Correct.Luce)
+Luce.total <- sum(Luce.results$Total.Luce)
+TP.Luce.prop <- prop.test(x = c(TP.hits, Luce.hits), n = c(TP.total, Luce.total))
+sink_vars(c("TP.hits", "TP.total", "Luce.hits", "Luce.total", "TP.Luce.prop"), "proportion-tests.txt", TRUE)
 
 BRnonprod.hits <- sum(BRnonprod_results$Correct.BRnonprod)
 BRnonprod.total <- sum(BRnonprod_results$Total.BRnonprod)
@@ -244,6 +251,16 @@ for (roundSet in c("zoomin"))  {
   # Only include rounds for each model when there are at least 10 total trials (can't get sufficiently precise estimate of results otherwise)
   df.to.plot <- subset(df.to.plot, TotalTrials >= 10)
   
+  y_bound_top <- 0.95
+  if (max(df.to.plot$Accuracy) > 0.95) {
+    y_bound_top <- 1.0
+  }
+  
+  y_bound_bottom <- 0.25
+  if (min(df.to.plot$Accuracy) < 0.25) {
+    y_bound_bottom <- 0.1
+  }
+  
   p<-ggplot(df.to.plot, aes(x=RoundNum, y=Accuracy, shape = Model, color = Model)) +
     # geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + five_model_color() + five_model_shape() +
     geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color_luce_simple() + four_model_shape_luce_simple() +
@@ -251,7 +268,7 @@ for (roundSet in c("zoomin"))  {
     fig_1_single_pane_theme(c(0.75, 0.15)) +
     # ylim(0,1) +
     scale_x_continuous(breaks=seq(12, 40, 4)) +
-    scale_y_continuous(breaks=seq(0.3, 1, 0.15), limits = c(0.3, 0.95))
+    scale_y_continuous(breaks=seq(0.3, 1, 0.15), limits = c(y_bound_bottom, y_bound_top))
     
   
   # Add M annotation

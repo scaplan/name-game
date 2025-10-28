@@ -4,13 +4,13 @@
 ##  Author: Spencer Caplan
 ##  CUNY Graduate Center
 ##
-##  Make 3x1 grid for Fig 1
+##  Make 2x1 grid for Fig 1
 ###########################################################
 ###########################################################
 
 rm(list = ls(all.names = TRUE)) # clear all objects includes hidden objects.
 invisible(gc()) # free up memory and report the memory usage.
-print("Create side-by-side figure for round-by-round accuracy")
+print("Create side-by-side figure for pre-post threshold performance")
 
 
 ## For handling project structure / relative paths ##
@@ -25,21 +25,19 @@ RUN_LIVE <- interactive()
 if (RUN_LIVE) {
   currMachine <- Sys.info()[['nodename']]
   outputDir = paste(sourceDir, '/paperfigs/', sep = "")
-  EarlyLuce = paste(sourceDir, '/output/', '/model_empirical_roundbyround/', '/M-12_noise-0_pop-FIFO_update-PENALIZE/', 'Name-in-mem-vs-output-superearly.png', sep = "")
-  RoundByRound = paste(sourceDir, '/output/', '/model_empirical_roundbyround/', '/M-12_noise-0_pop-FIFO_update-PENALIZE/', 'fig1_rbyr_accuracy_combined_new_zoomin.png', sep = "")
-  MemIndependent = paste(sourceDir, '/output/', '/model_empirical_roundbyround/', 'figS1_total_accuracy_by_M.png', sep = "")
-  output_name <- "SC_fig1_twostage_rbyr.png"
+  CoordSuccess = paste(sourceDir, '/output/', '/prepostthreshold/', 'Coord-Success-Pre-Post-TP-12.png', sep = "")
+  InduceThreshold = paste(sourceDir, '/output/', '/prepostthreshold/', 'Induce-threshold-magnitude-12.png', sep = "")
+  output_name <- "SC_fig2_prepost.png"
 }
 
 output_message <- load_in_libraries()
 load_in_plot_aesthetics()
 
-if (length(args) == 5) {
+if (length(args) == 4) {
   outputDir = args[1]
-  EarlyLuce = args[2]
-  RoundByRound = args[3]
-  MemIndependent = args[4]
-  output_name = args[5]
+  CoordSuccess = args[2]
+  InduceThreshold = args[3]
+  output_name = args[4]
 }
 
 
@@ -47,18 +45,16 @@ if (length(args) == 5) {
 ## 0. Reading in base plots
 setwd(sourceDir)
 
-p.EarlyLuce <- ggdraw() + draw_image(EarlyLuce) + draw_label("(B)", x = 0.16, y = 0.92, hjust = 0, vjust = 1, size = axisTextSizeBig)
-p.RoundByRound <- ggdraw() + draw_image(RoundByRound) + draw_label("(C)", x = 0.20, y = 0.92, hjust = 0, vjust = 1, size = axisTextSizeBig)
-p.MemIndependent <- ggdraw() + draw_image(MemIndependent) + draw_label("(A)", x = 0.20, y = 0.92, hjust = 0, vjust = 1, size = axisTextSizeBig)
+p.CoordSuccess <- ggdraw() + draw_image(CoordSuccess) + draw_label("(A)", x = 0.14, y = 0.92, hjust = 0, vjust = 1, size = axisTextSizeBig)
+p.InduceThreshold <- ggdraw() + draw_image(InduceThreshold) + draw_label("(B)", x = 0.14, y = 0.92, hjust = 0, vjust = 1, size = axisTextSizeBig)
 
 
-combined_plot <- plot_grid(p.MemIndependent, p.EarlyLuce, p.RoundByRound, nrow = 1)
-if (RUN_LIVE) { combined_plot }
+combined_plot <- plot_grid(p.CoordSuccess, p.InduceThreshold, nrow = 1)
 
 setwd(outputDir)
 ggsave(plot = combined_plot,
        filename=output_name,
-       width = 33, height = 11, units = "in") 
+       width = 22, height = 11, units = "in") 
 ##################################
 ##################################
 

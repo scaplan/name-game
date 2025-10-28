@@ -22,6 +22,7 @@ from agents.br_picksecond_agent import BR_Agent_PickSecond
 from agents.cb_agent import CB_Agent
 from agents.twothirds_agent import Twothirds_Agent # new for R&R
 from agents.luce_agent import Luce_Agent # new for R&R
+from agents.luce_withnoise_agent import Luce_Noise_Agent # new for R&R
 
 buffer = 4*" "
 VERBOSE_MODE = True
@@ -30,6 +31,8 @@ TP_GAUSSIAN_NOISE = 0
 MEM_SIZE = 0
 BR_NOISE_PARAM = 0.0
 BR_NOISE_AS_STR = "0."+str(BR_NOISE_PARAM)
+LUCE_NOISE_PARAM = 0.0
+LUCE_NOISE_AS_STR = "0."+str(LUCE_NOISE_PARAM)
 FIFO_REMOVAL = "FIFO"
 UPDATE_RULE = "PENALIZE"
 
@@ -108,7 +111,10 @@ def play_game(curr_data, output_file):
 				agent_nums_used.add(curr_ID)
 				agent_dict_CB[curr_ID] = CB_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
 				agent_dict_twothird[curr_ID] = Twothirds_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE)
-				agent_dict_luce[curr_ID] = Luce_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE) # new 
+				if LUCE_NOISE_PARAM:
+					agent_dict_luce[curr_ID] = Luce_Noise_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, LUCE_NOISE_PARAM) # new 
+				else:
+					agent_dict_luce[curr_ID] = Luce_Agent(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE) # new 
 				if BR_PICK_SECOND:
 					agent_dict_BR[curr_ID] = BR_Agent_PickSecond(curr_ID, MEM_SIZE, init_names_list, FIFO_REMOVAL, UPDATE_RULE, BR_NOISE_PARAM)
 				else:
@@ -186,7 +192,7 @@ def play_game(curr_data, output_file):
 
 def parse_args_and_defaults(args: argparse.Namespace) -> None:
 	global NG_SOURCE_FILENAME, OUTPUT_FILENAME_MAIN, OUTPUT_FILENAME_SIMPLE_NUMBERS, MEM_SIZE
-	global BR_NOISE_AS_STR, BR_NOISE_PARAM, FIFO_REMOVAL, UPDATE_RULE
+	global BR_NOISE_AS_STR, BR_NOISE_PARAM, LUCE_NOISE_AS_STR, LUCE_NOISE_PARAM, FIFO_REMOVAL, UPDATE_RULE
 	global VERBOSE_MODE, BR_PICK_SECOND, TP_GAUSSIAN_NOISE
 
 	if args.datasourcefile is None:
@@ -219,6 +225,17 @@ def parse_args_and_defaults(args: argparse.Namespace) -> None:
 	else:
 		BR_NOISE_AS_STR = "0."+str(args.brnoise)
 		BR_NOISE_PARAM = float(BR_NOISE_AS_STR)
+
+	if args.lucenoise is None:
+		LUCE_NOISE_PARAM = 0.0
+		LUCE_NOISE_AS_STR = "NormalPureLuce"
+	elif args.lucenoise > 9:
+		raise Exception("Luce noise level can't exceed 90%")
+	elif args.lucenoise < 0:
+		raise Exception("Luce noise level can't be less than 0%")
+	else:
+		LUCE_NOISE_AS_STR = "0."+str(args.lucenoise)
+		LUCE_NOISE_PARAM = float(LUCE_NOISE_AS_STR)
 
 	if args.brpicksecond is None:
 		raise Exception("Error parsing BR-pick-second flag")
@@ -269,6 +286,7 @@ if __name__ == "__main__":
 	parser.add_argument("--memsize", help="size limit for agent memory buffer", type=int)
 	parser.add_argument("--brnoise", help="parameter controlling noisy sampling rate for BR agents", type=int)
 	parser.add_argument("--brpicksecond", help="parameter controlling whether the BR+Noise agents should choose randomly or pick the second frequent item in memory", action=argparse.BooleanOptionalAction, default=False)
+	parser.add_argument("--lucenoise", help="parameter controlling second-choice sampling rate for Luce agents", type=int)
 	parser.add_argument("--poprule", help="Memory pop procedure: FIFO or random sampling", type=str)
 	parser.add_argument("--updaterule", help="Memory addition procedure: penalized or buffer", type=str)
 	parser.add_argument("--tpnoise", type=float,
