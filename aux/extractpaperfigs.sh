@@ -4,26 +4,30 @@ extract_paper_figs() {
 	STAT_PLOT_DIR=$1
 	PAPER_DIR=$2
 
+	# Fig 1 is the illustrative schematic of the name game...
+	### Numering of output files [2-5] doesn't reflect that for back-compatibility
 
-	# Fig 1 pre-post threshold
+
+	# Fig 2 pre-post threshold
 	Rscript ./aux/gridfig1.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Coord-Success-Pre-Post-TP-12.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-12.png" "SC_fig1_prepost.png"
 	Rscript ./aux/gridfig1.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-10.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-14.png" "SC_SI_prepost_induce_TP_different_M.png"
 
-
-	# Fig 2 R-by-R
+	# Fig 3 R-by-R
 	ROUND_BY_ROUND_DIR="${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-PENALIZE"
 	Rscript ./aux/gridfig2.R "${PAPER_DIR}" "${ROUND_BY_ROUND_DIR}/Name-in-mem-vs-output-superearly.png" "${ROUND_BY_ROUND_DIR}/fig1_rbyr_accuracy_combined_new_zoomin.png"  "${STAT_PLOT_DIR}/model_empirical_roundbyround/figS1_total_accuracy_by_M.png" "SC_fig2_twostage_rbyr.png"
 
-
-	# Fig 3 tipping point
+	# Fig 4 tipping point
 	Rscript ./aux/gridfig3.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/simulation/InitialConverge.png" "${STAT_PLOT_DIR}/simulation/CritMass_ProbFlip.png" "SC_fig3_flipping.png"
 
-	# Fig 4 mind reading
+	# Fig 5 mind reading
 	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-PENALIZE/SC_MR_Results.png" "${PAPER_DIR}/SC_fig4_mindreading.png"
 	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-BUFFER/SC_MR_Results.png" "${PAPER_DIR}/SC_SI_keeplast_mindreading.png"
 
+
+
+	######  Below is all SI stuff ######
 	# SI Two-Thirds comparison
-	cp "${STAT_PLOT_DIR}SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SI_compare_TP_two-thirds.png"
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SI_compare_TP_two-thirds.png"
 
 	# SI critmass puresim
 	cp "${STAT_PLOT_DIR}/simulation/CritMass_EmpiricalCompare.png" "${PAPER_DIR}/SC_SI_puresim_conv.png"
