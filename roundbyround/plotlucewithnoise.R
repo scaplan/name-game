@@ -73,7 +73,8 @@ df.all <- bind_rows(N0.results.byround,
 df.all <- df.all %>% mutate(Model = ifelse(grepl("s", Noise, fixed = TRUE), "Luce-plus-noise",
                                            ifelse(Noise == "TP", "TP", "Luce-plus-noise")))
 
-
+# Only include rounds for each model when there are at least 10 total trials (can't get sufficiently precise estimate of results otherwise)
+df.all <- subset(df.all, TotalTrials >= 10)
 df.all.earlyrounds <- subset(df.all, RoundNum <= 40 & RoundNum > 10)
 
 p <- ggplot(df.all.earlyrounds, aes(x=RoundNum, y=Accuracy, color = Noise)) +
@@ -87,7 +88,7 @@ p <- ggplot(df.all.earlyrounds, aes(x=RoundNum, y=Accuracy, color = Noise)) +
                                 "Luce + 40% Second Choice" = "#B8A9C9")) +
   labs(y="Model Accuracy\nP(Predict Participant's Next Choice)", x = "Round") +
   fig_1_single_pane_theme(c(0.67, 0.13)) +
-  # ylim(0,1) +
+  scale_x_continuous(breaks=seq(12, 40, 4)) +
   scale_y_continuous(breaks=seq(0, 1, 0.1), limits = c(0.15, 1.0))
 
 if (RUN_LIVE) { p }

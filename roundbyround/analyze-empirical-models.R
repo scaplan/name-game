@@ -266,7 +266,6 @@ for (roundSet in c("zoomin"))  {
     geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color_luce_simple() + four_model_shape_luce_simple() +
     labs(y="Model Accuracy\nP(Predict Participant's Next Choice)", x = "Round") +
     fig_1_single_pane_theme(c(0.75, 0.15)) +
-    # ylim(0,1) +
     scale_x_continuous(breaks=seq(12, 40, 4)) +
     scale_y_continuous(breaks=seq(0.3, 1, 0.15), limits = c(y_bound_bottom, y_bound_top))
     
