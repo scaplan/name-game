@@ -88,6 +88,30 @@ get_accuracy_by_round_by_source <<- function(df, model.name, SplitSource) {
   return(results.byround)
 }
 
+get_accuracy_by_round_with_stochastic <<- function(df, model.name, SplitSource) {
+  correct <- paste("Correct.", model.name, sep="")
+  score <- paste(model.name, ".score", sep="")
+  
+  if(missing(SplitSource)) {
+    results.byround <- df %>%
+      group_by(RoundNum) %>% 
+      summarise(Total = n(),
+                !!sym(correct) :=  sum(as.numeric(eval(as.name(score)))),
+                Accuracy = eval(as.name(correct))/Total, .groups = "drop_last") %>%
+      subset(select=-c(eval(as.name(correct)))) %>%
+      mutate(Model = model.name)
+  } else {
+    results.byround <- df %>%
+      group_by(SourcePaper, RoundNum) %>% 
+      summarise(Total = n(),
+                !!sym(correct) :=  sum(as.numeric(eval(as.name(score)))),
+                Accuracy = eval(as.name(correct))/Total, .groups = "drop_last") %>%
+      subset(select=-c(eval(as.name(correct)))) %>%
+      mutate(Model = model.name)
+  }
+  return(results.byround)
+}
+
 
 #############################
 ### Plot Theme Aesthetics ###
@@ -103,6 +127,7 @@ load_in_plot_aesthetics <- function(x) {
   TP_color <<- "dodgerblue"
   BR_color <<- "red"
   CB_color <<- "forestgreen"
+  Luce_color <<- "grey"
   BRnonprod_color <<- "red4"
   BR_pick_second <<- "purple4"
   
@@ -116,10 +141,40 @@ load_in_plot_aesthetics <- function(x) {
                                   "Threshold (TP)" = TP_color))
   }
   
+  five_model_color <<- function() {
+    scale_color_manual(values = c("Optimize" = BR_color,
+                                  "Optimize (pre-TP)" = BRnonprod_color,
+                                  "Imitate" = CB_color,
+                                  "Luce (post-TP)" = Luce_color,
+                                  "Threshold (TP)" = TP_color))
+  }
+  
+  four_model_color_luce_simple <<- function() {
+    scale_color_manual(values = c("Optimize" = BR_color,
+                                  "Imitate" = CB_color,
+                                  "Luce" = Luce_color,
+                                  "Threshold (TP)" = TP_color))
+  }
+  
   four_model_shape <<- function() {
     scale_shape_manual(values = c("Optimize" = 16,
                                   "Optimize (pre-TP)" = 14,
                                   "Imitate" = 17,
+                                  "Threshold (TP)" = 18))
+  }
+  
+  five_model_shape <<- function() {
+    scale_shape_manual(values = c("Optimize" = 16,
+                                  "Optimize (pre-TP)" = 14,
+                                  "Imitate" = 17,
+                                  "Luce (post-TP)" = 15,
+                                  "Threshold (TP)" = 18))
+  }
+  
+  four_model_shape_luce_simple <<- function() {
+    scale_shape_manual(values = c("Optimize" = 16,
+                                  "Imitate" = 17,
+                                  "Luce" = 15,
                                   "Threshold (TP)" = 18))
   }
   
@@ -227,7 +282,8 @@ load_in_libraries <- function(x) {
                 "cowplot",
                 "ggpubr",
                 "ggrepel",
-                "xtable")
+                "xtable",
+                "ggtext")
   
   # Loop over each package and call ensure_package
   for (pkg in packages) {

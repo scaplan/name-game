@@ -36,7 +36,7 @@ FIFO_REMOVAL = "FIFO"
 UPDATE_RULE = "PENALIZE"
 
 COL_SEP = "\t"
-POSSIBLE_AGENT_TYPES = ['TP', 'BR', 'CB']
+POSSIBLE_AGENT_TYPES = ['TP', 'BR', 'CB', 'Luce']
 
 
 def get_random_BR_or_Luce_agent(i, M):
@@ -62,6 +62,8 @@ def initialize_network():
 				# curr_agent = BR_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE, 0.0)
 			elif AGENT_CLASS == 'CB':
 				curr_agent = CB_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE)
+			elif AGENT_CLASS == 'Luce':
+				curr_agent = Luce_Agent(curr_ID, MEM_SIZE, ['old'], "FIFO", UPDATE_RULE)
 			else:
 				raise Exception("Non-implemented agent type specified")
 			curr_agent.seed_full_memory('old')

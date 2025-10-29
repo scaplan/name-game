@@ -17,7 +17,7 @@ args = commandArgs(trailingOnly=TRUE)
 RUN_LIVE <- interactive()
 
 if (RUN_LIVE) {
-  setwd("/Users/spcaplan/Dropbox/CS_accounts/penn_CS_account/satisficing/name-game/")
+  setwd("/Users/scaplan/Dropbox/CS_accounts/penn_CS_account/satisficing/name-game/")
 }
 
 
@@ -49,12 +49,12 @@ if (length(args) == 2) {
 setwd(dataDir)
 result_data <- read_tsv(targetInputFile, show_col_types = FALSE)
 result_data <- result_data %>% subset(SourcePaper == 'Both')
-result_data <- result_data %>% subset(select=c(Accuracy.CB, Accuracy.BR, Accuracy.TP, Accuracy.BRnonprod, M))
+result_data <- result_data %>% subset(select=c(Accuracy.CB, Accuracy.BR, Accuracy.Luce, Accuracy.TP, M))
 
 # Convert from long to wide
 wide.data <- result_data %>% rename(Optimize = Accuracy.BR,
-                       "Optimize (pre-TP)" = Accuracy.BRnonprod,
                        Imitate = Accuracy.CB,
+                       Luce = Accuracy.Luce,
                        "Threshold (TP)" = Accuracy.TP) %>%
   pivot_longer(!M, names_to = "Model", values_to = "Accuracy")
 ##################################
@@ -65,14 +65,18 @@ wide.data <- result_data %>% rename(Optimize = Accuracy.BR,
 ## 1. Make plot over M
 
 wide.data$Model<-as.factor(wide.data$Model)
-# levels(wide.data$Model)<-c("Optimize", "Optimize (pre-TP)", "Imitate", "Threshold (TP)")
+wide.data <- wide.data %>%
+  mutate(Model = fct_relevel(Model, "Optimize", "Imitate", "Luce", "Threshold (TP)"))
+# levels(wide.data$Model)<-c("Optimize", "Optimize (pre-TP)", "Imitate", "Luce (post-TP)", "Threshold (TP)")
+
+wide.data <- wide.data %>% filter(M < 22) # Just plotting plausible values (i.e. 8-20)
 
 p<-ggplot(wide.data, aes(x=M, y=Accuracy, shape = Model, color = Model)) +
-  geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color() + four_model_shape() +
-  labs(y="Accuracy in Predicting\nAgents' Round Choices", x = "Memory Size (M)") +
-  fig_1_single_pane_theme(c(0.75, 0.15)) +
-  scale_y_continuous(breaks=seq(0.4, 1.0, 0.1), limits = c(0.45, 1.0)) + 
-  scale_x_continuous(breaks=seq(8, 26, 4), limits = c(7, 27))
+  geom_point(size=8, position = pd) + geom_line(linewidth=2, position = pd) + four_model_color_luce_simple() + four_model_shape_luce_simple() +
+  labs(y="Model Accuracy\nP(Predict Participant's Next Choice)", x = "Memory Size (M)") +
+  fig_1_single_pane_theme(c(0.75, 0.35)) +
+  scale_y_continuous(breaks=seq(0.3, 1, 0.15), limits = c(0.3, 0.95)) + 
+  scale_x_continuous(breaks=seq(8, 20, 4), limits = c(7, 21))
 if (RUN_LIVE) { p }
 
 ggsave(plot = p,
@@ -80,3 +84,6 @@ ggsave(plot = p,
        width = 11, height = 11, units = "in")
 ##################################
 ##################################
+
+
+

@@ -4,19 +4,33 @@ extract_paper_figs() {
 	STAT_PLOT_DIR=$1
 	PAPER_DIR=$2
 
-
-	# Fig 1 R-by-R
-	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-PENALIZE/fig1_rbyr_accuracy_combined_new_earlyrounds.png" "${PAPER_DIR}/SC_fig1_rbyr.png"
+	# Fig 1 is the illustrative schematic of the name game...
+	### Numering of output files [2-5] doesn't reflect that for back-compatibility
 
 
 	# Fig 2 pre-post threshold
-	Rscript ./aux/gridfig2.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Coord-Success-Pre-Post-TP-12.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-12.png" "SC_fig2_prepost.png"
-	Rscript ./aux/gridfig2.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-10.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-14.png" "SC_SI_prepost_induce_TP_different_M.png"
+	Rscript ./aux/gridfig1.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Coord-Success-Pre-Post-TP-12.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-12.png" "SC_fig1_prepost.png"
+	Rscript ./aux/gridfig1.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-10.png" "${STAT_PLOT_DIR}/prepostthreshold/Induce-threshold-magnitude-14.png" "SC_SI_prepost_induce_TP_different_M.png"
+
+	# Fig 3 R-by-R
+	ROUND_BY_ROUND_DIR="${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-PENALIZE"
+	Rscript ./aux/gridfig2.R "${PAPER_DIR}" "${ROUND_BY_ROUND_DIR}/Name-in-mem-vs-output-superearly.png" "${ROUND_BY_ROUND_DIR}/fig1_rbyr_accuracy_combined_new_zoomin.png"  "${STAT_PLOT_DIR}/model_empirical_roundbyround/figS1_total_accuracy_by_M.png" "SC_fig2_twostage_rbyr.png"
+
+	# Fig 4 tipping point
+	Rscript ./aux/gridfig3.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/simulation/InitialConverge.png" "${STAT_PLOT_DIR}/simulation/CritMass_ProbFlip.png" "SC_fig3_flipping.png"
+
+	# Fig 5 mind reading
+	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-PENALIZE/SC_MR_Results.png" "${PAPER_DIR}/SC_fig4_mindreading.png"
+	cp "${STAT_PLOT_DIR}/mind_reading/M-12_var-2_update-BUFFER/SC_MR_Results.png" "${PAPER_DIR}/SC_SI_keeplast_mindreading.png"
 
 
-	# Fig 3 tipping point
-	Rscript ./aux/gridfig3.R "${PAPER_DIR}" "${STAT_PLOT_DIR}/simulation/CritMass_ProbFlip.png" "${STAT_PLOT_DIR}/simulation/CritMass_EmpiricalCompare.png" "${STAT_PLOT_DIR}/simulation/empiricalmemory/CritMass_EmpiricalCompare.png" "SC_fig3_flipping.png"
 
+	######  Below is all SI stuff ######
+	# SI Two-Thirds comparison
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SI_compare_TP_two-thirds.png"
+
+	# SI critmass puresim
+	cp "${STAT_PLOT_DIR}/simulation/CritMass_EmpiricalCompare.png" "${PAPER_DIR}/SC_SI_puresim_conv.png"
 
 	# SI critmass keep last
 	cp "${STAT_PLOT_DIR}/simulation/keeplast/CritMass_EmpiricalCompare.png" "${PAPER_DIR}/SC_SI_keeplast_emp_conv.png"
@@ -48,7 +62,7 @@ extract_paper_figs() {
 
 
 	# SI Buffer
-	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-BUFFER/fig1_rbyr_accuracy_combined_new_earlyrounds.png" "${PAPER_DIR}/SC_SI_keeplast_rbyr.png"
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/M-12_noise-0_pop-FIFO_update-BUFFER/fig1_rbyr_accuracy_combined_new_zoomin.png" "${PAPER_DIR}/SC_SI_keeplast_rbyr.png"
 
 
 	# SI BR+Noise
@@ -58,6 +72,9 @@ extract_paper_figs() {
 
 	# SI BR+Noise Critical Mass
 	cp "${STAT_PLOT_DIR}/simulation/CritMass_ProbFlip_MixLuce.png" "${PAPER_DIR}/SC_SI_CritMass_ProbFlip_MixLuce.png"
+
+	# SI Luce+Noise
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_rbyr_accuracy_LucewithNoisePickSecondChoice.png" "${PAPER_DIR}/SC_SI_rbyr_accuracy_LucewithNoisePickSecondChoice.png"
 
 
 	# SI Bayes Analysis

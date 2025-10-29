@@ -169,6 +169,30 @@ run_round_by_round_single_setting_pick_second () {
 	clearline
 }
 
+run_round_by_round_single_setting_luce_noise () {
+	MEMSIZE=$1
+	NOISELEVEL=$2
+	POP_RULE=$3
+	UPDATE_RULE=$4
+
+	CURR_OUTPUT_DIR="${MODEL_EMPIRICAL_DIR}M-${MEMSIZE}_LuceNoise-${NOISELEVEL}_pop-${POP_RULE}_update-${UPDATE_RULE}/"
+	mkdir_if_needed "${CURR_OUTPUT_DIR}"
+	ANALYSIS_DATA_FILE="${CURR_OUTPUT_DIR}/model_emp_results_round_by_round_all.tsv"
+	ROUND_BY_ROUND_ABM_COMPARE_SIMPLE="${CURR_OUTPUT_DIR}/model_emp_results_round_by_round_simple_global_numbers.txt"
+
+	echo "ROUND-BY-ROUND EMPIRICAL -- MemSize: ${MEMSIZE},  LUCEnoise: ${NOISELEVEL},  PopType: ${POP_RULE}..."
+
+	python3 ./roundbyround/unifiedempiricalnamegame.py --datasourcefile "${COMBINED_FILE}" --outputfile "${ANALYSIS_DATA_FILE}" --simplenumberfile "${ROUND_BY_ROUND_ABM_COMPARE_SIMPLE}" --memsize "${MEMSIZE}" --brnoise "0" --lucenoise "${NOISELEVEL}" --poprule "${POP_RULE}" --updaterule "${UPDATE_RULE}" 
+
+	# Round by round analysis
+	MODEL_ACCURACY_GLOBAL="${CURR_OUTPUT_DIR}/model_emp_results_total_accuracy.tsv"
+	MODEL_ACCURACY_ROUND_BY_ROUND="${CURR_OUTPUT_DIR}/model_emp_results_roundbyround_accuracy.tsv"
+	Rscript ./roundbyround/analyze-empirical-models.R "${CURR_OUTPUT_DIR}" "${ANALYSIS_DATA_FILE}" "${MODEL_ACCURACY_GLOBAL}" "${MODEL_ACCURACY_ROUND_BY_ROUND}"
+
+	# clear_big_file_round_by_round $1 $2 $3 $4
+	clearline
+}
+
 
 run_round_by_round_single_setting_tp_gauss () {
 	var_dir_prep_round_by_round $1 $2 $3 $4 "-TPgauss-${5}"
@@ -186,5 +210,19 @@ run_round_by_round_single_setting_tp_gauss () {
 
 }
 
+
+run_mind_reading_simulation () {
+	echo "MIND-READING GAME MODEL SIM -- MemSize: ${2}, MemVariance: ${3}, UpdateRule: ${4}..."
+	CURR_OUTPUT_DIR="${1}/M-${2}_var-${3}_update-${4}/"
+	mkdir_if_needed "${CURR_OUTPUT_DIR}"
+	MIND_READ_SIM_OUT="${CURR_OUTPUT_DIR}/MR_model_out.tsv"
+
+	declare -a MR_RUN_ARRAY=("16_5_8" "18_6_9" "20_6_10" "24_7_12")
+	printf "INFILE\tTP-m\tTP-sd\tBR-m\tBR-sd\tTWOTHIRDS-m\tTWOTHIRDS-sd\tLUCE-m\tLUCE-sd\n" > "${MIND_READ_SIM_OUT}"
+	for MR_RUN in "${MR_RUN_ARRAY[@]}" ; do
+		python3 ./critmass/colorsim.py --inputpath "${MR_BASE_PATH}/input/${MR_RUN}.csv" -M "${2}" -V "${3}" --updaterule "${4}" --outputfilered "${MIND_READ_SIM_OUT}" && clearline
+	done
+	Rscript ./critmass/plotmindreading.R "${MR_BASE_PATH}/v4_FINAL_TP_16round_5_8_clean.csv" "${MR_BASE_PATH}/v4_FINAL_TP_18round_6_9_clean.csv" "${MR_BASE_PATH}/v4_FINAL_TP_20round_6_10_clean.csv" "${MR_BASE_PATH}/v4_FINAL_TP_24round_7_12_clean.csv" "${MIND_READ_SIM_OUT}" "${CURR_OUTPUT_DIR}/MR_Results_Table.txt" "${CURR_OUTPUT_DIR}/SC_MR_Results.png"
+}
 
 

@@ -1,15 +1,15 @@
 [1] "# for paper (accuracy when between 10-20 rounds from TP)"
-[1] "mean(pre_tp_data$CoordSuccess): 0.274698795180723"
-[1] "mean(pre_tp_data$BR.score): 0.307630522088353"
+[1] "mean(pre_tp_data$CoordSuccess): 0.27759290072102"
+[1] "mean(pre_tp_data$BR.score): 0.330560177481974"
 
 	Exact binomial test
 
 data:  sum(pre_tp_data$CoordSuccess) and nrow(pre_tp_data)
-number of successes = 1026, number of trials = 3735, p-value < 2.2e-16
+number of successes = 1001, number of trials = 3606, p-value < 2.2e-16
 alternative hypothesis: true probability of success is not equal to 0.5
 95 percent confidence interval:
- 0.2604307 0.2893202
+ 0.2630232 0.2925239
 sample estimates:
 probability of success 
-             0.2746988 
+             0.2775929 
 

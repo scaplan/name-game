@@ -15,8 +15,8 @@ Please email any / all of the (co-first) authors if you have questions.
 
 * **Bash** tested on GNU bash, **version 3.2.57**(1)-release (arm64-apple-darwin23)
 * **Python** tested on **version 3.11.8** with no external libraries.
-* **R** scripts have been tested on **version 4.3.1**. The following R packages are required to create the plots and run statistical analysis. ```
-  dplyr, tidyr, ggplot2, Hmisc, scales, Matrix, tibble, lme4, reshape2, tidyverse, cowplot, ggpubr, ggrepel, xtable ```
+* **R** scripts have been tested on **version 4.3.2**. The following R packages are required to create the plots and run statistical analysis. ```
+  dplyr, tidyr, ggplot2, Hmisc, scales, Matrix, tibble, lme4, reshape2, tidyverse, cowplot, ggpubr, ggrepel, xtable, ggtext```
   - The scripts will attempt to install them automatically, though in my experimence it is far preferred to ensure that these are present and available on the local system ahead of time.
 
 No other setup is required.
@@ -26,7 +26,7 @@ No other setup is required.
 
 ## Running
 
-The following script runs all generation and analysis:
+The following script runs all generation and analyses:
 
 ```
 $ runall.sh
