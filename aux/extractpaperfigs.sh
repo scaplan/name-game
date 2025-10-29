@@ -27,7 +27,7 @@ extract_paper_figs() {
 
 	######  Below is all SI stuff ######
 	# SI Two-Thirds comparison
-	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SI_compare_TP_two-thirds.png"
+	cp "${STAT_PLOT_DIR}/model_empirical_roundbyround/SI_compare_TP_two-thirds.png" "${PAPER_DIR}/SC_SI_compare_TP_two-thirds.png"
 
 	# SI critmass puresim
 	cp "${STAT_PLOT_DIR}/simulation/CritMass_EmpiricalCompare.png" "${PAPER_DIR}/SC_SI_puresim_conv.png"
