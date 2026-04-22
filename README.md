@@ -1,14 +1,14 @@
-## Code for "A Simple Threshold Captures the Social Learning of Conventions"
+## Code for "A simple threshold captures the social learning of conventions" (PNAS)
+
+Published in [Proceedings of the National Academy of Sciences, 123 (17) e2508061123 (2026)](https://doi.org/10.1073/pnas.2508061123)
 
 Please email any / all of the (co-first) authors if you have questions.
 - **Spencer Caplan** scaplan@gc.cuny.edu
 - **Douglas Guilbeault** dguilb@stanford.edu
 - **Charles Yang** charles.yang@ling.upenn.edu
 
-### Preprint available below:
+### Preprint available below (official PNAS version linked above):
 - [PsyArXiv](https://osf.io/preprints/psyarxiv/xucka_v3)
-- [SocArXiv](https://osf.io/preprints/socarxiv/evnq7_v3?view_only=)
-
 
 ---
 
